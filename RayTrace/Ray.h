@@ -1,11 +1,13 @@
 #pragma once
 #include "Point.h"
+#include "LightIntensity.h"
 
 class Ray
 {
 private:
 	Point origin;
 	Vector direction;
+	LightIntensity color;
 
 	//std::list<Vector> intersections;
 	Vector intersection1, intersection2;
@@ -30,6 +32,9 @@ public:
 	Vector getIntersection2() {
 		return intersection2;
 	}
+	LightIntensity getColor() {
+		return color;
+	}
 	void setOrigin(Point p) {
 		origin = p;
 	}
@@ -47,11 +52,10 @@ public:
 	}
 	void addIntersection2(Vector v) {
 		intersection2 = v;
-	}
-
+	}	
+	
 #pragma endregion
 
-
-
+	void addRayInersection(Vector v, LightIntensity color);
 };
 

@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-
-
 Camera::Camera()
 {
 	pos = Point(0, 0, 0);
@@ -72,50 +70,51 @@ void Camera::renderOrtho(bitmap_image img)
 			Ray ray(Point(projectionPlane.getBase() + medX * projectionPlane.getV() + medY * projectionPlane.getU()), projectionPlane.getN());
 
 			Sphere sphere(0, 0, 0, 30);
+			sphere.setColor(1, 0, 0);
+			Sphere sphere2(20, 0, 50, 40);
+			sphere2.setColor(0, 0, 1);
 
 			int intersection = sphere.intersect(ray);
+			int intersection2 = sphere2.intersect(ray);
 
-			if (intersection == -1) {
+			if (ray.getIntersection1() == NULL)
+			{
 				img.set_pixel(i, j, 255, 255, 255);
 			}
 			else
-				img.set_pixel(i, j, 200, 0, 0);
-
+			{
+				int R = int(ray.getColor().getR() * 255);
+				int G = int(ray.getColor().getG() * 255);
+				int B = int(ray.getColor().getB() * 255);
+				img.set_pixel(i, j, R, G, B);
+			}
 		}
 	}
 
+	std::cout << "Render Ortho completed" << std::endl;
 	img.save_image("renderO.jpg");
 }
 
-void Camera::renderPersp(bitmap_image img)
+void Camera::renderPersp(bitmap_image img, int height, int width)
 {
-	int planeHeight = 20;
-	int planeWidth = 20;
+	int planeHeight = height;
+	int planeWidth = width;
 	int hig = img.height();
 	int wig = img.width();
 
 	float pixelWidth = 2.0f / wig;
 	float pixelHeight = 2.0f / hig;
 
-	//Vector v1 = Vector::crossProduct(up, dir);
-	//v1 *= fov;
-	//Vector v2 = up;
-	//v2 *= fov;
-	//Vector v3 = v1 - v2;
-	//v3 += pos;
-	//Point pbl(v3); //Point bottom left, not project base lerning :P
-
-	//projectionPlane = Plane(pos + (dir * planeDistance), v1, v2);
-
 	dir.normalize();
 	up.normalize();
 
 	Vector v1 = Vector::crossProduct(dir, up);
 	v1.normalize();
+ 
+	planeDistance = (planeWidth / 2.0) / std::tan((fov * 3.14159 / 180) / 2.0);
 
-	planeDistance = 20; //Tu musi byæ FOV, ¿eby zmieniaæ mo¿na ogniskow¹
-
-	projectionPlane = Plane(pos + (dir * planeDistance), up, v1);
+	projectionPlane = Plane(pos, up, v1);
+	pos = pos - (dir * planeDistance);
 
 	for (int i = 0; i < wig; i++) {
 		for (int j = 0; j < hig; j++) {
@@ -130,16 +129,27 @@ void Camera::renderPersp(bitmap_image img)
 			Ray ray(pos, toPixelDirection);
 
 			Sphere sphere(0, 0, 0, 30);
+			sphere.setColor(1, 0, 0);
+			Sphere sphere2(20, 0, 50, 40);
+			sphere2.setColor(0, 0, 1);
 
 			int intersection = sphere.intersect(ray);
+			int intersection2 = sphere2.intersect(ray);
 
-			if (intersection == -1) {
-				img.set_pixel(i, j, 0, 0, 0);
+			if (ray.getIntersection1() == NULL)
+			{
+				img.set_pixel(i, j, 255, 255, 255);
 			}
 			else
-				img.set_pixel(i, j, 200, 200, 200);
+			{
+				int R = int(ray.getColor().getR() * 255);
+				int G = int(ray.getColor().getG() * 255);
+				int B = int(ray.getColor().getB() * 255);
+				img.set_pixel(i, j, R, G, B);
+			}
 		}
 	}
 
+	std::cout << "Render Persp completed" << std::endl;
 	img.save_image("renderP.jpg");
 }

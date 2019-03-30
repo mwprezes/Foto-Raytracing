@@ -1,4 +1,7 @@
 #pragma once
+#include <cmath>
+#include <iostream>
+#include <conio.h>
 #include "Point.h"
 #include "bitmap_image.hpp"
 #include "Ray.h"
@@ -68,7 +71,7 @@ public:
 #pragma endregion
 
 	void renderOrtho(bitmap_image img);
-	void renderPersp(bitmap_image img);
+	void renderPersp(bitmap_image img, int height, int width);
 
 };
 

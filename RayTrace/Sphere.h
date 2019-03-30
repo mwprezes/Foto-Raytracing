@@ -6,6 +6,7 @@ class Sphere : public Primitive
 {
 private:
 	Point center;
+	LightIntensity color;
 	float radious;
 
 public:
@@ -14,6 +15,7 @@ public:
 	Sphere(float x, float y, float z, float r);
 	~Sphere();
 
+	void setColor(double R, double G, double B);
 	int intersect(Ray& ray);
 };
 

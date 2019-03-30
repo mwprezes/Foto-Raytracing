@@ -9,14 +9,20 @@ LightIntensity::LightIntensity()
 
 LightIntensity::LightIntensity(double R, double G, double B)
 {
-	r = R;
+	/*r = R;
 	g = G;
-	b = B;
+	b = B;*/
+	setR(R);
+	setG(G);
+	setB(B);
 }
 
 LightIntensity::LightIntensity(double RGB)
 {
-	r = g = b = RGB;
+	/*r = g = b = RGB;*/
+	setR(RGB);
+	setG(RGB);
+	setB(RGB);
 }
 
 

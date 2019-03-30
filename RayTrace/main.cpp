@@ -85,21 +85,15 @@ int main(int argc, char *argv[])
 
 	//Zadanie 2\\
 
-	//LightIntensity li(1);
-	//LightIntensity li2(1, 2, 3);
-	//cout << "LightTest " << li - li2 << endl;
-
 	Camera cam(Point(50, 0, -50), Vector(-1, 0, 1));
 	bitmap_image img(512, 512);
-
 	cam.renderOrtho(img);
 
 	cam = Camera(Point(50, 0, -50), Vector(-1, 0, 1));
-	cam.setFov(10);
-	cam.setPDist(10);
+	cam.setFov(45);
 	img = bitmap_image(512, 512);
 
-	cam.renderPersp(img);
+	cam.renderPersp(img, 20, 20);
 
 	getchar();
 	return 0;

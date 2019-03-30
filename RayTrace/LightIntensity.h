@@ -11,7 +11,7 @@ public:
 	LightIntensity(double RGB);
 	~LightIntensity();
 
-	#pragma region Getters/Setters
+#pragma region Getters/Setters
 
 	double getR() {
 		return r;
@@ -23,17 +23,32 @@ public:
 		return b;
 	}
 	void setR(double R) {
-		r = R;
+		if (R < 0)
+			r = 0;
+		else if (R > 1)
+			r = 1;
+		else
+			r = R;
 	}
 	void setG(double G) {
-		g = G;
+		if (G < 0)
+			g = 0;
+		else if (G > 1)
+			g = 1;
+		else
+			g = G;
 	}
 	void setB(double B) {
-		b = B;
+		if (B < 0)
+			b = 0;
+		else if (B > 1)
+			b = 1;
+		else
+			b = B;
 	}
 #pragma endregion
 
-	#pragma region Operators
+#pragma region Operators
 
 	friend std::ostream& operator<<(std::ostream &out, const LightIntensity& li)
 	{
