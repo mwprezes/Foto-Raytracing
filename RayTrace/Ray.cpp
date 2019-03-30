@@ -28,13 +28,13 @@ Ray::~Ray()
 
 void Ray::addRayInersection(Vector v, LightIntensity color)
 {
-	if (intersection1==NULL)
-	{		
+	if (intersection1 == NULL)
+	{
 		intersection1 = v;
 		this->color = color;
 	}
 	else
-	{		
+	{
 		Vector s1 = v - origin;
 		Vector s2 = intersection1 - origin;
 		if (s1.length() < s2.length())
@@ -43,5 +43,5 @@ void Ray::addRayInersection(Vector v, LightIntensity color)
 			this->color = color;
 		}
 	}
-		
+
 }

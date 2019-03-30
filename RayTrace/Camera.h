@@ -21,6 +21,7 @@ protected:
 	Sphere sphere;
 	Sphere sphere2;
 	int stop;
+	bool antiAliastingOn;
 
 public:
 	Camera();
@@ -49,6 +50,9 @@ public:
 	float getFov() {
 		return fov;
 	}
+	bool getAntiAliasingOn() {
+		return antiAliastingOn;
+	}
 	void setPos(float x, float y, float z) {
 		pos = Point(x, y, z);
 	}
@@ -69,6 +73,9 @@ public:
 	}
 	void setPDist(float val) {
 		planeDistance = val;
+	}
+	void setAntiAliasingOn(bool val) {
+		antiAliastingOn = val;
 	}
 
 #pragma endregion

@@ -4,7 +4,7 @@
 
 LightIntensity::LightIntensity()
 {
-	r = g = b = 0.0;
+	r = g = b = 1.0;
 }
 
 LightIntensity::LightIntensity(double R, double G, double B)

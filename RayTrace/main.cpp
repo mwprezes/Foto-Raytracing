@@ -84,15 +84,20 @@ int main(int argc, char *argv[])
 	getchar();
 
 	//Zadanie 2\\
+	
+	int height = 200;
+	int width = 200;
 
-	Camera cam(Point(50, 0, -50), Vector(-1, 0, 1));
+	Camera cam(Point(0, 0, -50), Vector(0, 0, 1));
+	cam.setAntiAliasingOn(1);
 	bitmap_image img(1024, 1024);
-	cam.renderOrtho(img, 200, 200);
+	cam.renderOrtho(img, height, width);
 
-	cam = Camera(Point(50, 0, -50), Vector(-1, 0, 1));
+	cam = Camera(Point(0, 0, -50), Vector(0, 0, 1));
+	cam.setAntiAliasingOn(1);
 	cam.setFov(45);
 	img = bitmap_image(1024, 1024);
-	cam.renderPersp(img, 20, 20);
+	cam.renderPersp(img, height, width);
 
 	getchar();
 	return 0;
