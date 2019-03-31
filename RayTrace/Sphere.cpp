@@ -26,11 +26,6 @@ Sphere::~Sphere()
 {
 }
 
-void Sphere::setColor(double R, double G, double B)
-{
-	color = LightIntensity(R, G, B);
-}
-
 int Sphere::intersect(Ray& ray)
 {
 	Vector oc = Point::makeVector(center, ray.getOrigin());

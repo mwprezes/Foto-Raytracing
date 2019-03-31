@@ -10,7 +10,7 @@ Ray::Ray(Point o, Vector dir)
 {
 	origin = o;
 	direction = dir.normalizeProduct();
-	color = LightIntensity(0, 0, 0);
+	color = LightIntensity(0.5, 0.5, 0.5);
 }
 
 Ray::Ray(float x, float y, float z, float xx, float yy, float zz)
@@ -18,9 +18,8 @@ Ray::Ray(float x, float y, float z, float xx, float yy, float zz)
 	origin = Point(x, y, z);
 	direction = Vector(xx, yy, zz);
 	direction.normalize();
-	color = LightIntensity(0, 0, 0);
+	color = LightIntensity(0.5, 0.5, 0.5);
 }
-
 
 Ray::~Ray()
 {
