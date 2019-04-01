@@ -122,6 +122,11 @@ public:
 			return true;
 		else return false;
 	}
+	bool operator!=(Vector v) {
+		if (this->x != v.x || this->y != v.y || this->z != v.z)
+			return true;
+		else return false;
+	}
 	/*friend Vector& operator+(const Vector &v, const Vector &v2) {
 	Vector vec;
 	vec.x = v.x + v2.x;

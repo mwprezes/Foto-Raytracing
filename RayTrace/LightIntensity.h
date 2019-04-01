@@ -82,6 +82,19 @@ public:
 		return LightIntensity(r / val, g / val, b / val);
 	}
 
+	bool operator==(LightIntensity& li) {
+		if (this->r == li.r && this->g == li.g && this->b == li.b)
+			return true;
+		else
+			return false;
+	}
+	bool operator!=(LightIntensity& li) {
+		if (this->r != li.r || this->g != li.g || this->b != li.b)
+			return true;
+		else
+			return false;
+	}
+
 	LightIntensity& operator+=(const LightIntensity& li) {
 		this->r += li.r;
 		this->g += li.g;

@@ -17,6 +17,7 @@ Plane::Plane(Point p, Vector u, Vector v)
 	this->u = u;
 	this->v = v;
 	n = Vector::crossProduct(u, v);
+	n.normalize();
 }
 
 Plane::Plane(float x, float y, float z, float xu, float yu, float zu, float xv, float yv, float zv)
