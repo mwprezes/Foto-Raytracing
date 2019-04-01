@@ -23,26 +23,26 @@ public:
 		return b;
 	}
 	void setR(double R) {
-		if (R < 0)
-			r = 0;
-		else if (R > 1)
-			r = 1;
+		if (R < 0.0)
+			r = 0.0;
+		else if (R > 1.0)
+			r = 1.0;
 		else
 			r = R;
 	}
 	void setG(double G) {
-		if (G < 0)
-			g = 0;
-		else if (G > 1)
-			g = 1;
+		if (G < 0.0)
+			g = 0.0;
+		else if (G > 1.0)
+			g = 1.0;
 		else
 			g = G;
 	}
 	void setB(double B) {
-		if (B < 0)
-			b = 0;
-		else if (B > 1)
-			b = 1;
+		if (B < 0.0)
+			b = 0.0;
+		else if (B > 1.0)
+			b = 1.0;
 		else
 			b = B;
 	}
@@ -81,7 +81,6 @@ public:
 	LightIntensity operator/(double val) {
 		return LightIntensity(r / val, g / val, b / val);
 	}
-
 	bool operator==(LightIntensity& li) {
 		if (this->r == li.r && this->g == li.g && this->b == li.b)
 			return true;
@@ -94,7 +93,6 @@ public:
 		else
 			return false;
 	}
-
 	LightIntensity& operator+=(const LightIntensity& li) {
 		this->r += li.r;
 		this->g += li.g;

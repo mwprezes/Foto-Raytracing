@@ -4,14 +4,14 @@ Sphere::Sphere()
 {
 	center = Point(0);
 	radious = 1;
-	color = LightIntensity(1, 0, 0);
+	color = LightIntensity(1.0, 0.0, 0.0);
 }
 
 Sphere::Sphere(Point p, float r)
 {
 	center = p;
 	radious = r;
-	color = LightIntensity(1, 0, 0);
+	color = LightIntensity(1.0, 0.0, 0.0);
 }
 
 Sphere::Sphere(float x, float y, float z, float r)
@@ -19,7 +19,7 @@ Sphere::Sphere(float x, float y, float z, float r)
 	Point p(x, y, z);
 	center = p;
 	radious = r;
-	color = LightIntensity(1, 0, 0);
+	color = LightIntensity(1.0, 0.0, 0.0);
 }
 
 Sphere::~Sphere()

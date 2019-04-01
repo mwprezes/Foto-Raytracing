@@ -18,6 +18,8 @@ protected:
 	float fov;
 	Plane projectionPlane;
 	float planeDistance;
+	int planeHeight;
+	int planeWidth;
 	Sphere sphere;
 	Sphere sphere2;
 	int stop;
@@ -83,6 +85,6 @@ public:
 	void renderOrtho(bitmap_image img, int height, int width);
 	void renderPersp(bitmap_image img, int height, int width);
 	LightIntensity samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
-	LightIntensity samplingPersp(Point center, float height, float width, int maxStop);
+	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 };
 

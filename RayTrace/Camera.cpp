@@ -45,14 +45,13 @@ Camera::~Camera()
 
 void Camera::renderOrtho(bitmap_image img, int height, int width)
 {
-	int planeHeight = height;
-	int planeWidth = width;
+	planeHeight = height;
+	planeWidth = width;
 	int hig = img.height();
 	int wig = img.width();
 
 	float pixelWidth = 2.0f / wig;
 	float pixelHeight = 2.0f / hig;
-
 	dir.normalize();
 	up.normalize();
 
@@ -77,28 +76,11 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			sphere2.intersect(ray);
 
 			LightIntensity pixelColor;
-			
+
 			if (antiAliastingOn)
 			{
-				Ray rayTL(Point(ray.getOrigin() - pixelWidth * 0.5f * projectionPlane.getV() + pixelHeight * 0.5f * projectionPlane.getU()), projectionPlane.getN());
-				Ray rayTR(Point(ray.getOrigin() + pixelWidth * 0.5f * projectionPlane.getV() + pixelHeight * 0.5f * projectionPlane.getU()), projectionPlane.getN());
-				Ray rayBL(Point(ray.getOrigin() - pixelWidth * 0.5f * projectionPlane.getV() - pixelHeight * 0.5f * projectionPlane.getU()), projectionPlane.getN());
-				Ray rayBR(Point(ray.getOrigin() + pixelWidth * 0.5f * projectionPlane.getV() - pixelHeight * 0.5f * projectionPlane.getU()), projectionPlane.getN());
-
-				sphere.intersect(rayTL);
-				sphere2.intersect(rayTL);
-
-				sphere.intersect(rayTR);
-				sphere2.intersect(rayTR);
-
-				sphere.intersect(rayBL);
-				sphere2.intersect(rayBL);
-
-				sphere.intersect(rayBR);	
-				sphere2.intersect(rayBR);
-
 				stop = 0;
-				pixelColor = samplingOrtho(ray, rayTL, rayTR, rayBL, rayBR, pixelHeight, pixelWidth, 10);
+				pixelColor = samplingOrtho(ray, Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), pixelHeight, pixelWidth, 4);
 			}
 			else
 				pixelColor = ray.getColor();
@@ -119,8 +101,8 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 
 void Camera::renderPersp(bitmap_image img, int height, int width)
 {
-	int planeHeight = height;
-	int planeWidth = width;
+	planeHeight = height;
+	planeWidth = width;
 	int hig = img.height();
 	int wig = img.width();
 
@@ -160,40 +142,8 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 
 			if (antiAliastingOn)
 			{
-				Point pixelTL = Point(pixelCenter - pixelWidth * 0.5f * projectionPlane.getV() + pixelHeight * 0.5f * projectionPlane.getU());
-				Point pixelTR = Point(pixelCenter + pixelWidth * 0.5f * projectionPlane.getV() + pixelHeight * 0.5f * projectionPlane.getU());
-				Point pixelBL = Point(pixelCenter - pixelWidth * 0.5f * projectionPlane.getV() - pixelHeight * 0.5f * projectionPlane.getU());
-				Point pixelBR = Point(pixelCenter + pixelWidth * 0.5f * projectionPlane.getV() - pixelHeight * 0.5f * projectionPlane.getU());
-
-				Vector toPixelDirectionTL = Point::makeVector(pos, pixelTL);
-				Vector toPixelDirectionTR = Point::makeVector(pos, pixelTR);
-				Vector toPixelDirectionBL = Point::makeVector(pos, pixelBL);
-				Vector toPixelDirectionBR = Point::makeVector(pos, pixelBR);
-
-				toPixelDirectionTL.normalize();
-				toPixelDirectionTR.normalize();
-				toPixelDirectionBL.normalize();
-				toPixelDirectionBR.normalize();
-
-				Ray rayTL(pos, toPixelDirectionTL);
-				Ray rayTR(pos, toPixelDirectionTR);
-				Ray rayBL(pos, toPixelDirectionBL);
-				Ray rayBR(pos, toPixelDirectionBR);
-
-				sphere.intersect(rayTL);
-				sphere2.intersect(rayTL);
-
-				sphere.intersect(rayTR);
-				sphere2.intersect(rayTR);
-
-				sphere.intersect(rayBL);
-				sphere2.intersect(rayBL);
-
-				sphere.intersect(rayBR);											
-				sphere2.intersect(rayBR);
-
-				stop = 0;
-				pixelColor = samplingPersp(pixelCenter, pixelHeight, pixelWidth, 10);
+				stop = 0;				
+				pixelColor = samplingPersp(pixelCenter, NULL, NULL, NULL, NULL, Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), pixelHeight, pixelWidth, 4);
 			}
 			else
 				pixelColor = ray.getColor();
@@ -202,6 +152,7 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			int G = int(pixelColor.getG() * 255);
 			int B = int(pixelColor.getB() * 255);
 			img.set_pixel(i, j, R, G, B);
+
 		}
 		if (i % 5 == 0)
 			std::cout << ".";
@@ -216,20 +167,16 @@ LightIntensity Camera::samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL
 	width = width * 0.5;
 	height = height * 0.5;
 
-	LightIntensity pixelColor;	
+	LightIntensity pixelColor;
 
-	if (rayTL.getDirection() == rayMed.getDirection()) {}
-	else
-		rayTL = Ray(Point(rayMed.getOrigin() - width * projectionPlane.getV() + height * projectionPlane.getU()), projectionPlane.getN());
-	if (rayTR.getDirection() == rayMed.getDirection()) {}
-	else
-		rayTR = Ray(Point(rayMed.getOrigin() + width * projectionPlane.getV() + height * projectionPlane.getU()), projectionPlane.getN());
-	if (rayBL.getDirection() == rayMed.getDirection()) {}
-	else
-		rayBL = Ray(Point(rayMed.getOrigin() - width * projectionPlane.getV() - height * projectionPlane.getU()), projectionPlane.getN());
-	if (rayBR.getDirection() == rayMed.getDirection()) {}
-	else
-		rayBR = Ray(Point(rayMed.getOrigin() + width * projectionPlane.getV() - height * projectionPlane.getU()), projectionPlane.getN());
+	if (rayTL.getDirection() != rayMed.getDirection())
+		rayTL = Ray(Point(rayMed.getOrigin() - width * planeWidth * projectionPlane.getV() + height * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+	if (rayTR.getDirection() != rayMed.getDirection())
+		rayTR = Ray(Point(rayMed.getOrigin() + width * planeWidth * projectionPlane.getV() + height * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+	if (rayBL.getDirection() != rayMed.getDirection())
+		rayBL = Ray(Point(rayMed.getOrigin() - width * planeWidth * projectionPlane.getV() - height * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+	if (rayBR.getDirection() != rayMed.getDirection())
+		rayBR = Ray(Point(rayMed.getOrigin() + width * planeWidth * projectionPlane.getV() - height * planeHeight * projectionPlane.getU()), projectionPlane.getN());
 
 	stop += 1;
 
@@ -250,33 +197,33 @@ LightIntensity Camera::samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL
 	LightIntensity color3 = rayBL.getColor();
 
 	sphere.intersect(rayBR);
-	sphere2.intersect(rayBR);	
+	sphere2.intersect(rayBR);
 	LightIntensity color4 = rayBR.getColor();
 
 	//Antyaliasing
 	if (stop < maxStop)
-	{		
-		if (rayMed.getColor().getR() != color1.getR() || rayMed.getColor().getG() != color1.getG() || rayMed.getColor().getB() != color1.getB())
+	{
+		if (color1 != color0)
 		{
-			Ray raySamp(Point(rayTL.getOrigin() + width * 0.5 * projectionPlane.getV() - height * 0.5 * projectionPlane.getU()), projectionPlane.getN());
-			color1 = samplingOrtho(raySamp, rayTL, Ray(Point(0, 0, 0), -raySamp.getDirection()), Ray(Point(0, 0, 0), -raySamp.getDirection()), rayMed, height, width, maxStop);
+			Ray raySamp(Point(rayTL.getOrigin() + width * 0.5 * planeWidth * projectionPlane.getV() - height * 0.5 * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+			color1 = samplingOrtho(raySamp, rayTL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayMed, height, width, maxStop);
 		}
-		if (rayMed.getColor().getR() != color2.getR() || rayMed.getColor().getG() != color2.getG() || rayMed.getColor().getB() != color2.getB())
+		if (color2 != color0)
 		{
-			Ray raySamp(Point(rayTR.getOrigin() - width * 0.5 * projectionPlane.getV() - height * 0.5 * projectionPlane.getU()), projectionPlane.getN());
-			color2 = samplingOrtho(raySamp, Ray(Point(0, 0, 0), -raySamp.getDirection()), rayTR, rayMed, Ray(Point(0, 0, 0), -raySamp.getDirection()), height, width, maxStop);
+			Ray raySamp(Point(rayTR.getOrigin() - width * 0.5 * planeWidth * projectionPlane.getV() - height * 0.5 * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+			color2 = samplingOrtho(raySamp, Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayTR, rayMed, Ray(Point(0, 0, 0), Vector(0, 0, 0)), height, width, maxStop);
 		}
-		if (rayMed.getColor().getR() != color3.getR() || rayMed.getColor().getG() != color3.getG() || rayMed.getColor().getB() != color3.getB())
+		if (color3 != color0)
 		{
-			Ray raySamp(Point(rayBL.getOrigin() + width * 0.5 * projectionPlane.getV() + height  * 0.5 * projectionPlane.getU()), projectionPlane.getN());
-			color3 = samplingOrtho(raySamp, Ray(Point(0, 0, 0), -raySamp.getDirection()), rayMed, rayBL, Ray(Point(0, 0, 0), -raySamp.getDirection()), height, width, maxStop);
+			Ray raySamp(Point(rayBL.getOrigin() + width * 0.5 * planeWidth * projectionPlane.getV() + height * 0.5 * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+			color3 = samplingOrtho(raySamp, Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayMed, rayBL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), height, width, maxStop);
 		}
-		if (rayMed.getColor().getR() != color4.getR() || rayMed.getColor().getG() != color4.getG() || rayMed.getColor().getB() != color4.getB())
+		if (color4 != color0)
 		{
-			Ray raySamp(Point(rayBR.getOrigin() - width * 0.5 * projectionPlane.getV() + height  * 0.5 * projectionPlane.getU()), projectionPlane.getN());
-			color4 = samplingOrtho(raySamp, rayMed, Ray(Point(0, 0, 0), -raySamp.getDirection()), Ray(Point(0, 0, 0), -raySamp.getDirection()), rayBR, height, width, maxStop);
+			Ray raySamp(Point(rayBR.getOrigin() - width * 0.5 * planeWidth * projectionPlane.getV() + height * 0.5 * planeHeight * projectionPlane.getU()), projectionPlane.getN());
+			color4 = samplingOrtho(raySamp, rayMed, Ray(Point(0, 0, 0), Vector(0, 0, 0)), Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayBR, height, width, maxStop);
 		}
-	}	
+	}
 
 	color0 = color0 * 0.5;
 	color1 = color1 * 0.5;
@@ -298,42 +245,63 @@ LightIntensity Camera::samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL
 	return pixelColor;
 }
 
-LightIntensity Camera::samplingPersp(Point center, float height, float width, int maxStop)
+LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop)
 {
 	width = width * 0.5;
 	height = height * 0.5;
 
 	LightIntensity pixelColor;
 
-	Point pixelTL = Point(center - width * projectionPlane.getV() + height * projectionPlane.getU());
-	Point pixelTR = Point(center + width * projectionPlane.getV() + height * projectionPlane.getU());
-	Point pixelBL = Point(center - width * projectionPlane.getV() - height * projectionPlane.getU());
-	Point pixelBR = Point(center + width * projectionPlane.getV() - height * projectionPlane.getU());
-
 	Vector toPixelDirection = Point::makeVector(pos, center);
-	Vector toPixelDirectionTL = Point::makeVector(pos, pixelTL);
-	Vector toPixelDirectionTR = Point::makeVector(pos, pixelTR);
-	Vector toPixelDirectionBL = Point::makeVector(pos, pixelBL);
-	Vector toPixelDirectionBR = Point::makeVector(pos, pixelBR);
-
+	toPixelDirection.normalize();
 	Ray rayMed(pos, toPixelDirection);
-	Ray rayTL(pos, toPixelDirectionTL);
-	Ray rayTR(pos, toPixelDirectionTR);
-	Ray rayBL(pos, toPixelDirectionBL);
-	Ray rayBR(pos, toPixelDirectionBR);
+
+	Point pixelTL = Point(center - width * planeWidth * projectionPlane.getV() + height * planeHeight * projectionPlane.getU());
+	Point pixelTR = Point(center + width * planeWidth * projectionPlane.getV() + height * planeHeight * projectionPlane.getU());
+	Point pixelBL = Point(center - width * planeWidth * projectionPlane.getV() - height * planeHeight * projectionPlane.getU());
+	Point pixelBR = Point(center + width * planeWidth * projectionPlane.getV() - height * planeHeight * projectionPlane.getU());
+
+	if (pixelTL != TL)
+	{		
+		TL = pixelTL;
+		Vector toPixelDirectionTL = Point::makeVector(pos, pixelTL);
+		toPixelDirectionTL.normalize();
+		rayTL = Ray(pos, toPixelDirectionTL);
+	}	
+	if (pixelTR != TR)
+	{	
+		TR = pixelTR;
+		Vector toPixelDirectionTR = Point::makeVector(pos, pixelTR);
+		toPixelDirectionTR.normalize();
+		rayTR = Ray(pos, toPixelDirectionTR);
+	}	
+	if (pixelBL != BL)
+	{		
+		BL = pixelBL;
+		Vector toPixelDirectionBL = Point::makeVector(pos, pixelBL);
+		toPixelDirectionBL.normalize();
+		rayBL = Ray(pos, toPixelDirectionBL);
+	}	
+	if (pixelBR != BR)
+	{		
+		BR = pixelBR;
+		Vector toPixelDirectionBR = Point::makeVector(pos, pixelBR);
+		rayBR = Ray(pos, toPixelDirectionBR);
+		toPixelDirectionBR.normalize();
+	}	
 
 	sphere.intersect(rayMed);
 	sphere2.intersect(rayMed);
 	LightIntensity color0 = rayMed.getColor();
-	
+
 	sphere.intersect(rayTL);
 	sphere2.intersect(rayTL);
 	LightIntensity color1 = rayTL.getColor();
-	
+
 	sphere.intersect(rayTR);
 	sphere2.intersect(rayTR);
 	LightIntensity color2 = rayTR.getColor();
-	
+
 	sphere.intersect(rayBL);
 	sphere2.intersect(rayBL);
 	LightIntensity color3 = rayBL.getColor();
@@ -346,31 +314,30 @@ LightIntensity Camera::samplingPersp(Point center, float height, float width, in
 
 	//Antyaliasing
 	if (stop < maxStop)
-	{	
-		if (rayMed.getColor().getR() != color1.getR() || rayMed.getColor().getG() != color1.getG() || rayMed.getColor().getB() != color1.getB())
+	{
+		if (color1 != color0)
 		{
-			Point centerSamp = Point(pixelTL + width * 0.5 * projectionPlane.getV() - height * 0.5 * projectionPlane.getU());
-			color1 = samplingPersp(centerSamp, height, width, maxStop);
+			Point centerSamp = Point(pixelTL + width * 0.5 * planeWidth * projectionPlane.getV() - height * 0.5 * planeHeight * projectionPlane.getU());
+			color1 = samplingPersp(centerSamp, TL, NULL, NULL, center, rayTL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayMed, height, width, maxStop);
 		}
-		if (rayMed.getColor().getR() != color2.getR() || rayMed.getColor().getG() != color2.getG() || rayMed.getColor().getB() != color2.getB())
+		if (color2 != color0)
 		{
-			Point centerSamp = Point(pixelTR - width * 0.5 * projectionPlane.getV() - height * 0.5 * projectionPlane.getU());
-			color2 = samplingPersp(centerSamp, height, width, maxStop);
+			Point centerSamp = Point(pixelTR - width * 0.5 * planeWidth * projectionPlane.getV() - height * 0.5 * planeHeight * projectionPlane.getU());
+			color2 = samplingPersp(centerSamp, NULL, TR, center, NULL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayTR, rayMed, Ray(Point(0, 0, 0), Vector(0, 0, 0)), height, width, maxStop);
 
 		}
-		if (rayMed.getColor().getR() != color3.getR() || rayMed.getColor().getG() != color3.getG() || rayMed.getColor().getB() != color3.getB())
+		if (color3 != color0)
 		{
-			Point centerSamp = Point(pixelBL + width * 0.5 * projectionPlane.getV() + height * 0.5 * projectionPlane.getU());
-			color3 = samplingPersp(centerSamp, height, width, maxStop);
+			Point centerSamp = Point(pixelBL + width * 0.5 * planeWidth * projectionPlane.getV() + height * 0.5 * planeHeight * projectionPlane.getU());
+			color3 = samplingPersp(centerSamp, NULL, center, BL, NULL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayMed, rayBL, Ray(Point(0, 0, 0), Vector(0, 0, 0)), height, width, maxStop);
 
 		}
-		if (rayMed.getColor().getR() != color4.getR() || rayMed.getColor().getG() != color4.getG() || rayMed.getColor().getB() != color4.getB())
+		if (color4 != color0)
 		{
-			Point centerSamp = Point(pixelBR - width * 0.5 * projectionPlane.getV() + height * 0.5 * projectionPlane.getU());
-			color4 = samplingPersp(centerSamp, height, width, maxStop);
-
+			Point centerSamp = Point(pixelBR - width * 0.5 * planeWidth * projectionPlane.getV() + height * 0.5 * planeHeight * projectionPlane.getU());
+			color4 = samplingPersp(centerSamp, center, NULL, NULL, BR, rayMed, Ray(Point(0, 0, 0), Vector(0, 0, 0)), Ray(Point(0, 0, 0), Vector(0, 0, 0)), rayBR, height, width, maxStop);
 		}
-	}	
+	}
 
 	color0 = color0 * 0.5;
 	color1 = color1 * 0.5;
