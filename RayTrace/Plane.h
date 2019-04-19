@@ -14,6 +14,7 @@ public:
 	Plane(float x, float y, float z, float xu, float yu, float zu, float xv, float yv, float zv);
 	Plane(Point p, Vector n);
 	Plane(float x, float y, float z, float xn, float yn, float zn);
+	Plane(Point p1, Point p2, Point p3);
 	~Plane();
 
 	Point getBase() {

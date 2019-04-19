@@ -11,7 +11,7 @@ Primitive::~Primitive()
 {
 }
 
-int Primitive::intersect(Ray & ray)
+int Primitive::intersect(Ray *ray)
 {
 	return 0;
 }

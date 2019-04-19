@@ -18,6 +18,8 @@ public:
 	Ray(float x, float y, float z, float xx, float yy, float zz);
 	~Ray();
 
+	float distance;
+
 	#pragma region Getter/Setter
 
 	Point getOrigin() {
@@ -57,5 +59,6 @@ public:
 #pragma endregion
 
 	void addRayInersection(Vector v, LightIntensity color);
+	void addRayInersection(float v, LightIntensity color);
 };
 

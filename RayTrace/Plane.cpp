@@ -37,6 +37,15 @@ Plane::Plane(float x, float y, float z, float xn, float yn, float zn)
 	n = Vector (xn, yn, zn);
 }
 
+Plane::Plane(Point p1, Point p2, Point p3)
+{
+	base = p1;
+	u = Point::makeVector(p2, p1);
+	v = Point::makeVector(p3, p1);
+	n = Vector::crossProduct(u, v);
+	n.normalize();
+}
+
 
 Plane::~Plane()
 {
@@ -58,6 +67,8 @@ int Plane::intersect(Ray & ray)
 	float z = ray.getOrigin().getZ() + ray.getDirection().getZ() * t;
 
 	addIntersection1(Vector(x, y, z));
+	//float xyz = (Vector(x, y, z) - ray.getOrigin()).lengthSquered();
+	ray.addRayInersection(Vector(x, y, z), color);
 
 	return 1;
 }

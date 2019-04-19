@@ -3,6 +3,7 @@
 #include "Ray.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "Triangle.h"
 #include "LightIntensity.h"
 #include "Camera.h"
 
@@ -43,9 +44,9 @@ int main(int argc, char *argv[])
 	Plane plane(0, 0, 0, 0, 1, 1);
 	Plane plane2(p, v);
 
-	int i = sphere.intersect(ray);
-	int j = sphere.intersect(ray2);
-	int k = sphere.intersect(ray3);
+	int i = sphere.intersect(&ray);
+	int j = sphere.intersect(&ray2);
+	int k = sphere.intersect(&ray3);
 	int l = plane.intersect(ray2);
 
 	//R1 & Sphere
@@ -88,17 +89,46 @@ int main(int argc, char *argv[])
 	int height = 200;
 	int width = 200;
 
-	Camera cam(Point(0, 0, -50), Vector(0, 0, 1));
-	cam.setAntiAliasingOn(1);
+	Camera *cam = new Camera(Point(0, 0, -100), Vector(0, 0, 1));
+	cam->setAntiAliasingOn(0);
 	bitmap_image img(1024, 1024);
-	cam.renderOrtho(img, height, width);
+	cam->setFilename("renderOTriangle.jpg");
 
-	cam = Camera(Point(0, 0, -50), Vector(0, 0, 1));
-	cam.setAntiAliasingOn(1);
-	cam.setFov(45);
+	cam->setScene(3);
+	cam->getScene()->addPrimitive(new Sphere(-30, 0, 0, 30));
+	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+
+	cam->getScene()->addPrimitive(new Sphere(30, 0, 0, 30));
+	cam->getScene()->getPrimitive(1)->setColor(1, 0, 0);
+
+	cam->getScene()->addPrimitive(new Triangle(Point(-30, 0, -50), Point(30, 0, -50), Point(0, 50, -50)));
+	cam->getScene()->getPrimitive(2)->setColor(0, 1, 0);
+
+	cam->renderOrtho(img, height, width);
+
+	cam = new Camera(Point(0, 0, -30), Vector(0, 0, 1));
+	cam->setAntiAliasingOn(0);
+	cam->setFov(45);
 	img = bitmap_image(1024, 1024);
-	cam.renderPersp(img, height, width);
+	cam->setFilename("renderPTriangle.jpg");
+
+	cam->setScene(3);
+	cam->getScene()->addPrimitive(new Sphere(-30, 0, 0, 30));
+	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+
+	cam->getScene()->addPrimitive(new Sphere(30, 0, 0, 30));
+	cam->getScene()->getPrimitive(1)->setColor(1, 0, 0);
+
+	cam->getScene()->addPrimitive(new Triangle(Point(-30, 0, -50), Point(30, 0, -50), Point(0, 50, -50)));
+	cam->getScene()->getPrimitive(2)->setColor(0, 1, 0);
+
+	cam->renderPersp(img, height, width);
 
 	getchar();
+
+	//Zadanie 3\\
+
+
+
 	return 0;
 }

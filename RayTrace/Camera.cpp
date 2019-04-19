@@ -41,6 +41,7 @@ Camera::Camera(float x, float y, float z, float vx, float vy, float vz, float ux
 
 Camera::~Camera()
 {
+	delete scene;
 }
 
 void Camera::renderOrtho(bitmap_image img, int height, int width)
@@ -60,10 +61,10 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 
 	projectionPlane = Plane(pos, up, v1);
 
-	sphere = Sphere(0, 0, 0, 60);
+	/*sphere = Sphere(0, 0, 0, 60);
 	sphere.setColor(0, 0, 1);
-	sphere2 = Sphere(-70, 0, 40, 40);
-	sphere2.setColor(1, 0, 0);
+	sphere2 = Sphere(30, 0, 0, 60);
+	sphere2.setColor(1, 0, 0);*/
 
 	for (int i = 0; i < wig; i++) {
 		for (int j = 0; j < hig; j++) {
@@ -71,9 +72,13 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			float medX = (-1.0f + (i + 0.5f) * pixelWidth) * planeWidth;
 			float medY = (1.0f - (j + 0.5f) * pixelHeight) * planeHeight;
 
-			Ray ray(Point(projectionPlane.getBase() + medX * projectionPlane.getV() + medY * projectionPlane.getU()), projectionPlane.getN());
-			sphere.intersect(ray);
-			sphere2.intersect(ray);
+			Ray ray = Ray(Point(projectionPlane.getBase() + medX * projectionPlane.getV() + medY * projectionPlane.getU()), projectionPlane.getN());
+			/*sphere.intersect(&ray);
+			sphere2.intersect(&ray);*/
+
+			for (int i = 0; i < scene->getAddIndex(); i++) {
+				scene->getPrimitive(i)->intersect(&ray);
+			}
 
 			LightIntensity pixelColor;
 
@@ -96,7 +101,7 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 	}
 
 	std::cout << "Render Ortho completed" << std::endl;
-	img.save_image("renderO.jpg");
+	img.save_image(filename);
 }
 
 void Camera::renderPersp(bitmap_image img, int height, int width)
@@ -120,10 +125,10 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 	projectionPlane = Plane(pos, up, v1);
 	pos = pos - (dir * planeDistance);
 
-	sphere = Sphere(0, 0, 0, 60);
+	/*sphere = Sphere(0, 0, 0, 60);
 	sphere.setColor(0, 0, 1);
-	sphere2 = Sphere(-70, 0, 40, 40);
-	sphere2.setColor(1, 0, 0);
+	sphere2 = Sphere(30, 0, 0, 60);
+	sphere2.setColor(1, 0, 0);*/
 
 	for (int i = 0; i < wig; i++) {
 		for (int j = 0; j < hig; j++) {
@@ -135,8 +140,12 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			Vector toPixelDirection = Point::makeVector(pos, pixelCenter);
 			toPixelDirection.normalize();
 			Ray ray(pos, toPixelDirection);
-			sphere.intersect(ray);
-			sphere2.intersect(ray);
+			/*sphere.intersect(&ray);
+			sphere2.intersect(&ray);*/
+
+			for (int i = 0; i < scene->getAddIndex(); i++) {
+				scene->getPrimitive(i)->intersect(&ray);
+			}
 
 			LightIntensity pixelColor;
 
@@ -159,7 +168,7 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 	}
 
 	std::cout << "Render Persp completed" << std::endl;
-	img.save_image("renderP.jpg");
+	img.save_image(filename);
 }
 
 LightIntensity Camera::samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop)
@@ -180,24 +189,39 @@ LightIntensity Camera::samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL
 
 	stop += 1;
 
-	sphere.intersect(rayMed);
-	sphere2.intersect(rayMed);
+	//sphere.intersect(&rayMed);
+	//sphere2.intersect(&rayMed);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayMed);
+	}
 	LightIntensity color0 = rayMed.getColor();
 
-	sphere.intersect(rayTL);
-	sphere2.intersect(rayTL);
+	//sphere.intersect(&rayTL);
+	//sphere2.intersect(&rayTL);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayTL);
+	}
 	LightIntensity color1 = rayTL.getColor();
 
-	sphere.intersect(rayTR);
-	sphere2.intersect(rayTR);
+	//sphere.intersect(&rayTR);
+	//sphere2.intersect(&rayTR);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayTR);
+	}
 	LightIntensity color2 = rayTR.getColor();
 
-	sphere.intersect(rayBL);
-	sphere2.intersect(rayBL);
+	//sphere.intersect(&rayBL);
+	//sphere2.intersect(&rayBL);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayBL);
+	}
 	LightIntensity color3 = rayBL.getColor();
 
-	sphere.intersect(rayBR);
-	sphere2.intersect(rayBR);
+	//sphere.intersect(&rayBR);
+	//sphere2.intersect(&rayBR);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayBL);
+	}
 	LightIntensity color4 = rayBR.getColor();
 
 	//Antyaliasing
@@ -290,24 +314,39 @@ LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL,
 		toPixelDirectionBR.normalize();
 	}	
 
-	sphere.intersect(rayMed);
-	sphere2.intersect(rayMed);
+	//sphere.intersect(&rayMed);
+	//sphere2.intersect(&rayMed);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayMed);
+	}
 	LightIntensity color0 = rayMed.getColor();
 
-	sphere.intersect(rayTL);
-	sphere2.intersect(rayTL);
+	//sphere.intersect(&rayTL);
+	//sphere2.intersect(&rayTL);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayTL);
+	}
 	LightIntensity color1 = rayTL.getColor();
 
-	sphere.intersect(rayTR);
-	sphere2.intersect(rayTR);
+	//sphere.intersect(&rayTR);
+	//sphere2.intersect(&rayTR);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayTR);
+	}
 	LightIntensity color2 = rayTR.getColor();
 
-	sphere.intersect(rayBL);
-	sphere2.intersect(rayBL);
+	//sphere.intersect(&rayBL);
+	//sphere2.intersect(&rayBL);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayBL);
+	}
 	LightIntensity color3 = rayBL.getColor();
 
-	sphere.intersect(rayBR);
-	sphere2.intersect(rayBR);
+	//sphere.intersect(&rayBR);
+	//sphere2.intersect(&rayBR);
+	for (int i = 0; i < scene->getAddIndex(); i++) {
+		scene->getPrimitive(i)->intersect(&rayBL);
+	}
 	LightIntensity color4 = rayBR.getColor();
 
 	stop += 1;

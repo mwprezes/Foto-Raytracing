@@ -2,12 +2,13 @@
 #include <cmath>
 #include <iostream>
 #include <conio.h>
+#include <string>
 #include "Point.h"
 #include "bitmap_image.hpp"
 #include "Ray.h"
 #include "Sphere.h"
 #include "Plane.h"
-
+#include "Scene.h"
 
 class Camera
 {
@@ -20,10 +21,12 @@ protected:
 	float planeDistance;
 	int planeHeight;
 	int planeWidth;
-	Sphere sphere;
-	Sphere sphere2;
+	//Sphere sphere;
+	//Sphere sphere2;
+	Scene *scene;
 	int stop;
 	bool antiAliastingOn;
+	std::string filename;
 
 public:
 	Camera();
@@ -55,6 +58,9 @@ public:
 	bool getAntiAliasingOn() {
 		return antiAliastingOn;
 	}
+	Scene* getScene() {
+		return scene;
+	}
 	void setPos(float x, float y, float z) {
 		pos = Point(x, y, z);
 	}
@@ -78,6 +84,12 @@ public:
 	}
 	void setAntiAliasingOn(bool val) {
 		antiAliastingOn = val;
+	}
+	void setFilename(std::string file) {
+		filename = file;
+	}
+	void setScene(int numberOfPrimitives) {
+		this->scene = new Scene(numberOfPrimitives);
 	}
 
 #pragma endregion

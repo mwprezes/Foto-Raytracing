@@ -14,6 +14,6 @@ public:
 	Sphere(float x, float y, float z, float r);
 	~Sphere();
 
-	int intersect(Ray& ray);
+	int intersect(Ray *ray);
 };
 

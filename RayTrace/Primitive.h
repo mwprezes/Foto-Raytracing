@@ -12,7 +12,7 @@ public:
 	Primitive();
 	~Primitive();
 
-	virtual int intersect(Ray& ray);
+	virtual int intersect(Ray *ray);
 	void setColor(double R, double G, double B);
 
 	Vector getIntersection1() {
