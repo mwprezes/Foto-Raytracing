@@ -120,6 +120,7 @@
     <ClInclude Include="bitmap_image.hpp" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="LightIntensity.h" />
+    <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Primitive.h" />
