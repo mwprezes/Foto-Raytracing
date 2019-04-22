@@ -6,7 +6,7 @@
 #include "Triangle.h"
 #include "LightIntensity.h"
 #include "Camera.h"
-
+#include "ObjLoader.h"
 
 using namespace std;
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	cam->getScene()->addPrimitive(new Triangle(Point(-30, 0, -50), Point(30, 0, -50), Point(0, 50, -50)));
 	cam->getScene()->getPrimitive(2)->setColor(0, 1, 0);
 
-	cam->renderOrtho(img, height, width);
+	//cam->renderOrtho(img, height, width);
 
 	cam = new Camera(Point(0, 0, -30), Vector(0, 0, 1));
 	cam->setAntiAliasingOn(0);
@@ -122,13 +122,15 @@ int main(int argc, char *argv[])
 	cam->getScene()->addPrimitive(new Triangle(Point(-30, 0, -50), Point(30, 0, -50), Point(0, 50, -50)));
 	cam->getScene()->getPrimitive(2)->setColor(0, 1, 0);
 
-	cam->renderPersp(img, height, width);
+	//cam->renderPersp(img, height, width);
 
 	getchar();
 
 	//Zadanie 3\\
 
-
+	ObjLoader loader;
+	cout << "Loader: " << loader.LoadOBJ("testfile.obj") << endl;
+	getchar();
 
 	return 0;
 }
