@@ -129,7 +129,26 @@ int main(int argc, char *argv[])
 	//Zadanie 3\\
 
 	ObjLoader loader;
-	cout << "Loader: " << loader.LoadOBJ("testfile.obj") << endl;
+	cout << "Loader: " << loader.LoadOBJ("CUBE3.obj") << endl;
+	
+	Mesh mesh;
+	mesh.setTriangles(loader.triangles);
+
+	cam = new Camera(Point(30, 30, -30), Vector(-1, -1, 1));
+	cam->setAntiAliasingOn(0);
+	cam->setFov(45);
+	img = bitmap_image(1024, 1024);
+	cam->setFilename("renderMesh.jpg");
+
+	cam->setScene(mesh.getTriangles().size());
+	for (int i = 0; i < mesh.getTriangles().size(); i++)
+	{
+		cam->getScene()->addPrimitive(new Triangle(mesh.getTriangle(i)));
+		cam->getScene()->getPrimitive(i)->setColor(0, 1, 0);
+	}
+
+	cam->renderPersp(img, height, width);
+
 	getchar();
 
 	return 0;

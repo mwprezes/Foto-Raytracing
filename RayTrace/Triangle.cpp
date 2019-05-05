@@ -51,3 +51,8 @@ int Triangle::intersect(Ray * ray)
 	ray->addRayInersection(xyz, color);
 	return 1;
 }
+
+void Triangle::makePlane()
+{
+	this->plane = Plane(v1, v2, v3);
+}
