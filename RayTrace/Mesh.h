@@ -18,6 +18,13 @@ struct Material
 	float Ns;
 	float illum;
 	float Tr;
+	float d;
+
+	std::string map_Ka;
+	std::string map_Kd;
+	std::string map_Ks;
+	std::string map_d;
+	std::string map_bump;
 };
 
 class Mesh
@@ -48,7 +55,7 @@ public:
 	std::vector<Triangle> getTriangles() {
 		return triangles;
 	}
-	Material getMat() {
+	Material getMaterial() {
 		return mat;
 	}
 
@@ -73,6 +80,9 @@ public:
 	}
 	void addIndex(unsigned int i) {
 		indices.push_back(i);
+	}
+	void setMaterial(Material mat) {
+		this->mat = mat;
 	}
 
 	#pragma endregion

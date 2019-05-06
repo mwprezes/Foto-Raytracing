@@ -133,6 +133,7 @@ int main(int argc, char *argv[])
 	
 	Mesh mesh;
 	mesh.setTriangles(loader.triangles);
+	mesh.setMaterial(loader.mat);
 
 	cam = new Camera(Point(30, 30, -30), Vector(-1, -1, 1));
 	cam->setAntiAliasingOn(0);
@@ -144,7 +145,7 @@ int main(int argc, char *argv[])
 	for (int i = 0; i < mesh.getTriangles().size(); i++)
 	{
 		cam->getScene()->addPrimitive(new Triangle(mesh.getTriangle(i)));
-		cam->getScene()->getPrimitive(i)->setColor(0, 1, 0);
+		cam->getScene()->getPrimitive(i)->setColor(mesh.getMaterial().Kd.getX(), mesh.getMaterial().Kd.getY(), mesh.getMaterial().Kd.getZ());
 	}
 
 	cam->renderPersp(img, height, width);

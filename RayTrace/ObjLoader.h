@@ -377,6 +377,7 @@ private:
 public:
 	std::vector<Primitive> sceneMesh;
 	std::vector<Triangle> triangles;
+	Material mat;
 
 	ObjLoader() {
 
@@ -411,7 +412,7 @@ public:
 
 			//if (lineBeggin(currline) == "hello")
 				//std::cout << "hello" << std::endl;
-			if (lineBeggin(currline) == "g") 
+			if (lineBeggin(currline) == "g")
 			{
 				meshname = getRest(currline);
 				std::cout << "Meshname: " << meshname << std::endl;
@@ -467,6 +468,8 @@ public:
 				for (Triangle &tri : tempTriangles)
 					triangles.push_back(tri);
 			}
+			else if (lineBeggin(currline) == "mtllib")
+				LoadMaterial(getRest(currline));
 		}
 
 		/*for(Vertex &vert : verts)
@@ -479,7 +482,86 @@ public:
 		}*/
 
 		file.close();
+
 		return true;
+	}
+
+	bool LoadMaterial(std::string filename)
+	{
+		if (filename.substr(filename.size() - 4, 4) != ".mtl")
+			return false;
+
+		std::ifstream file(filename);
+
+		if (!file.is_open())
+			return false;
+
+		Material tempMat;
+		std::string currline;
+		while (std::getline(file, currline))
+		{
+			//Params
+			if (lineBeggin(currline) == "newmtl")
+			{
+				tempMat.name = getRest(currline);
+			}
+			else if (lineBeggin(currline) == "Ns")
+				tempMat.Ns = std::stof(getRest(currline));
+			else if (lineBeggin(currline) == "d")
+				tempMat.d = std::stof(getRest(currline));
+			else if (lineBeggin(currline) == "Tr")
+				tempMat.Tr = std::stof(getRest(currline));
+			else if (lineBeggin(currline) == "illum")
+				tempMat.illum = std::stof(getRest(currline));
+			else if (lineBeggin(currline) == "Ka")
+			{
+				std::vector<std::string> sKa;
+				Vector ka;
+
+				splitStr(currline, sKa, ' '); // '\t' je¿eli tabulatrory; ' ' je¿eli spacje
+
+				ka = Vector(std::stof(sKa[0]), std::stof(sKa[1]), std::stof(sKa[2]));
+				tempMat.Ka = ka;
+			}
+			else if (lineBeggin(currline) == "Kd")
+			{
+				std::vector<std::string> sKa;
+				Vector ka;
+
+				splitStr(currline, sKa, ' '); // '\t' je¿eli tabulatrory; ' ' je¿eli spacje
+
+				ka = Vector(std::stof(sKa[0]), std::stof(sKa[1]), std::stof(sKa[2]));
+				tempMat.Kd = ka;
+			}
+			else if (lineBeggin(currline) == "Ks")
+			{
+				std::vector<std::string> sKa;
+				Vector ka;
+
+				splitStr(currline, sKa, ' '); // '\t' je¿eli tabulatrory; ' ' je¿eli spacje
+
+				ka = Vector(std::stof(sKa[0]), std::stof(sKa[1]), std::stof(sKa[2]));
+				tempMat.Ks = ka;
+			}
+			//Maps
+			if (lineBeggin(currline) == "map_Ka")
+				tempMat.map_Ka = getRest(currline);
+			else if (lineBeggin(currline) == "map_Kd")
+				tempMat.map_Kd = getRest(currline);
+			else if (lineBeggin(currline) == "map_Ks")
+				tempMat.map_Ks = getRest(currline);
+			else if (lineBeggin(currline) == "map_d")
+				tempMat.map_d = getRest(currline);
+			else if (lineBeggin(currline) == "map_bump" || lineBeggin(currline) == "bump")
+				tempMat.map_bump = getRest(currline);
+		}
+		mat = tempMat;
+		file.close();
+
+		if (&mat == NULL)
+			return false;
+		else
+			return true;
 	}
 
 };
