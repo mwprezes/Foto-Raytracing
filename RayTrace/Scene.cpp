@@ -21,7 +21,7 @@ Scene::~Scene()
 {
 	//delete[] primitives;
 	for (int i = 0; i < maxIndex; i++) {
-		delete primitives[i];
+		delete[] primitives[i];
 	}
 	delete[] primitives;
 	primitives = NULL;
