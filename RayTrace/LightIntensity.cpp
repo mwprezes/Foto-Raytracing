@@ -4,7 +4,7 @@
 
 LightIntensity::LightIntensity()
 {
-	r = g = b = 1.0;
+	r = g = b = 0.0;
 }
 
 LightIntensity::LightIntensity(double R, double G, double B)
@@ -28,4 +28,11 @@ LightIntensity::LightIntensity(double RGB)
 
 LightIntensity::~LightIntensity()
 {
+}
+
+void LightIntensity::Clamp()
+{
+	setR(r);
+	setG(g);
+	setB(b);
 }

@@ -98,5 +98,6 @@ public:
 	void renderPersp(bitmap_image img, int height, int width);
 	LightIntensity samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
+	LightIntensity Phong(Ray& ray, Primitive& shape, float height, float width);
 };
 

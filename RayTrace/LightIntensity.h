@@ -97,24 +97,28 @@ public:
 		this->r += li.r;
 		this->g += li.g;
 		this->b += li.b;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator-=(const LightIntensity& li) {
 		this->r -= li.r;
 		this->g -= li.g;
 		this->b -= li.b;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator*=(const LightIntensity& li) {
 		this->r *= li.r;
 		this->g *= li.g;
 		this->b *= li.b;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator/=(const LightIntensity& li) {
 		this->r /= li.r;
 		this->g /= li.g;
 		this->b /= li.b;
+		Clamp();
 		return *this;
 	}
 
@@ -122,24 +126,28 @@ public:
 		this->r += val;
 		this->g += val;
 		this->b += val;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator-=(const double val) {
 		this->r -= val;
 		this->g -= val;
 		this->b -= val;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator*=(const double val) {
 		this->r *= val;
 		this->g *= val;
 		this->b *= val;
+		Clamp();
 		return *this;
 	}
 	LightIntensity& operator/=(const double val) {
 		this->r /= val;
 		this->g /= val;
 		this->b /= val;
+		Clamp();
 		return *this;
 	}
 
@@ -158,6 +166,6 @@ public:
 
 #pragma endregion
 
-
+	void Clamp();
 };
 

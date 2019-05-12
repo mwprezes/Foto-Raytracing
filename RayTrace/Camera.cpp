@@ -397,3 +397,21 @@ LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL,
 	pixelColor = color1 + color2 + color3 + color4;
 	return pixelColor;
 }
+
+LightIntensity Camera::Phong(Ray & ray, Primitive& shape, float height, float width)
+{
+	float specular;
+	double r, g, b, cos;
+	Vector I, N, R;
+
+	I = ray.getDirection().normalizeProduct();
+	N = ray.getIntersection1().normalizeProduct(); //?
+	R = I - (N * Vector::crossProduct(N, I) * 2.0f);
+
+	Vector ss = Vector::crossProduct(ray.getDirection().normalizeProduct(), R);
+	if (-ss.getX() > 0 && -ss.getY() > 0 && -ss.getZ() > 0) {
+		//specular = Math.pow(ss, a);
+	}
+
+	return LightIntensity();
+}

@@ -1,12 +1,25 @@
 #pragma once
 #include "Ray.h"
 
+struct PrimitiveMaterial
+{
+	std::string name;
+	Vector Ka;
+	Vector Kd;
+	Vector Ks;
+	float Ns;
+	float illum;
+	float Tr;
+	float d;
+};
+
 class Primitive
 {
 protected:
 	//Materia³y
 	Vector intersection1, intersection2;
 	LightIntensity color;
+	Vector normal;
 
 public:
 	Primitive();
@@ -26,6 +39,10 @@ public:
 	}
 	void addIntersection2(Vector v) {
 		intersection2 = v;
+	}
+
+	Vector getNormal() {
+		return normal;
 	}
 };
 

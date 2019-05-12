@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	cam->getScene()->addPrimitive(new Triangle(Point(-30, 0, -50), Point(30, 0, -50), Point(0, 50, -50)));
 	cam->getScene()->getPrimitive(2)->setColor(0, 1, 0);
 
-	//cam->renderPersp(img, height, width);
+	cam->renderPersp(img, height, width);
 
 	getchar();
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
 		cam->getScene()->getPrimitive(i)->setColor(mesh.getMaterial().Kd.getX(), mesh.getMaterial().Kd.getY(), mesh.getMaterial().Kd.getZ());
 	}
 
-	cam->renderPersp(img, height, width);
+	//cam->renderPersp(img, height, width);
 
 	getchar();
 
