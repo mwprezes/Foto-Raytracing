@@ -48,11 +48,33 @@ int Triangle::intersect(Ray * ray)
 		return -1;
 
 	float xyz = (tempRay.getIntersection1() - ray->getOrigin()).lengthSquered();
-	ray->addRayInersection(xyz, color);
+	ray->addRayInersection(xyz, color, tempRay.getIntersection1());
 	return 1;
 }
 
 void Triangle::makePlane()
 {
 	this->plane = Plane(v1, v2, v3);
+}
+
+Vector Triangle::getNormal()
+{
+	//Vector n = Vector::crossProduct(vn2 - vn1, vn3 - vn1);
+	return plane.getN();
+}
+
+Vector Triangle::getNormal(float x, float y)
+{
+	Vector n = (1 - x - y) * vn1 + x * vn2 + y * vn3;
+	return n;
+}
+
+Vector Triangle::getNormal(Vector intersection)
+{
+	Vector local_x = plane.getBase() * plane.getV();
+	Vector local_y = plane.getBase() * plane.getU();
+	float x = Vector::dotProduct(intersection, local_x);
+	float y = Vector::dotProduct(intersection, local_y);
+	Vector n = (1 - x - y) * vn1 + x * vn2 + y * vn3;
+	return Vector();
 }

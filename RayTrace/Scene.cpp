@@ -39,3 +39,8 @@ void Scene::addPrimitive(Primitive *shape)
 		//No no
 	}
 }
+
+void Scene::addLight(LightSource light)
+{
+	lights.push_back(light);
+}

@@ -1,5 +1,7 @@
 #pragma once
 #include "Primitive.h"
+#include "LightSource.h"
+#include <vector>
 
 class Scene
 {
@@ -8,6 +10,8 @@ private:
 	int addIndex = 0;
 	int maxIndex;
 	//array<Primitive, maxIndex> 
+
+	std::vector<LightSource> lights;
 
 public:
 	Scene();
@@ -25,6 +29,12 @@ public:
 		Primitive p = Primitive();
 		return &p;
 	}
+	LightSource getLight(int at) {
+		return lights[at];
+	}
+	std::vector<LightSource> getLights() {
+		return lights;
+	}
 	int getMaxIndex() {
 		return maxIndex;
 	}
@@ -33,5 +43,6 @@ public:
 	}
 
 	void addPrimitive(Primitive *shape);
+	void addLight(LightSource light);
 };
 

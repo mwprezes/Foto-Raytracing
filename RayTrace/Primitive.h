@@ -7,10 +7,35 @@ struct PrimitiveMaterial
 	Vector Ka;
 	Vector Kd;
 	Vector Ks;
+	// Specular Exponent
 	float Ns;
+	// Illumination
 	float illum;
+	// Transparent
 	float Tr;
+	// Dissolve
 	float d;
+
+	PrimitiveMaterial() {
+		name = "Default";
+		Ka = Vector(0.3f);
+		Kd = Vector(0.5f);
+		Ks = Vector(0.8f);
+		Ns = 32;
+		illum = 2;
+		Tr = 0;
+		d = 1;
+	}
+	PrimitiveMaterial(std::string name, Vector Ka, Vector Kd, Vector Ks, float Ns, float illum, float Tr, float d) {
+		this->name = name;
+		this->Ka = Ka;
+		this->Kd = Kd;
+		this->Ks = Ks;
+		this->Ns = Ns;
+		this->illum = illum;
+		this->Tr = Tr;
+		this->d = d;
+	}
 };
 
 class Primitive
@@ -21,12 +46,15 @@ protected:
 	LightIntensity color;
 	Vector normal;
 
+	PrimitiveMaterial material;
+
 public:
 	Primitive();
 	~Primitive();
 
 	virtual int intersect(Ray *ray);
 	void setColor(double R, double G, double B);
+	void setMat(std::string name, Vector Ka, Vector Kd, Vector Ks, float Ns, float illum, float Tr, float d);
 
 	Vector getIntersection1() {
 		return intersection1;
@@ -40,9 +68,15 @@ public:
 	void addIntersection2(Vector v) {
 		intersection2 = v;
 	}
+	void setMat(PrimitiveMaterial mat) {
+		material = mat;
+	}
 
 	Vector getNormal() {
 		return normal;
+	}
+	PrimitiveMaterial getMat() {
+		return material;
 	}
 };
 

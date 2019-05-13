@@ -17,5 +17,8 @@ public:
 
 	int intersect(Ray *ray);
 	void makePlane();
+	Vector getNormal();
+	Vector getNormal(float x, float y);
+	Vector getNormal(Vector intersection);
 };
 

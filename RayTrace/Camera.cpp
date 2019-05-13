@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include <cmath>
 
 Camera::Camera()
 {
@@ -143,8 +144,21 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			/*sphere.intersect(&ray);
 			sphere2.intersect(&ray);*/
 
+			LightIntensity PhongColor;
+
 			for (int i = 0; i < scene->getAddIndex(); i++) {
 				scene->getPrimitive(i)->intersect(&ray);
+				if (ray.intersects) 
+				{
+					/*//Triangle *testT = static_cast<Triangle*>(scene->getPrimitive(i));
+					Triangle testT = *(Triangle*)scene->getPrimitive(i);
+					std::string testS = typeid(testT).name();*/
+					/*std::string testS = typeid(static_cast<Triangle*>(scene->getPrimitive(i))).name();
+					if (testS == "Triangle")
+						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);*/
+					if (typeid(static_cast<Triangle*>(scene->getPrimitive(i))) == typeid(Triangle*))
+						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
+				}
 			}
 
 			LightIntensity pixelColor;
@@ -157,9 +171,14 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			else
 				pixelColor = ray.getColor();
 
-			int R = int(pixelColor.getR() * 255);
+			/*int R = int(pixelColor.getR() * 255);
 			int G = int(pixelColor.getG() * 255);
 			int B = int(pixelColor.getB() * 255);
+			img.set_pixel(i, j, R, G, B);*/
+
+			int R = int(PhongColor.getR() * 255);
+			int G = int(PhongColor.getG() * 255);
+			int B = int(PhongColor.getB() * 255);
 			img.set_pixel(i, j, R, G, B);
 
 		}
@@ -400,18 +419,108 @@ LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL,
 
 LightIntensity Camera::Phong(Ray & ray, Primitive& shape, float height, float width)
 {
-	float specular;
+	Vector specular;
 	double r, g, b, cos;
 	Vector I, N, R;
 
 	I = ray.getDirection().normalizeProduct();
-	N = ray.getIntersection1().normalizeProduct(); //?
+	N = shape.getNormal();
 	R = I - (N * Vector::crossProduct(N, I) * 2.0f);
 
 	Vector ss = Vector::crossProduct(ray.getDirection().normalizeProduct(), R);
 	if (-ss.getX() > 0 && -ss.getY() > 0 && -ss.getZ() > 0) {
-		//specular = Math.pow(ss, a);
+		specular.setX(std::pow(ss.getX(), shape.getMat().Ka.getX()));
+		specular.setY(std::pow(ss.getY(), shape.getMat().Ka.getY()));
+		specular.setZ(std::pow(ss.getZ(), shape.getMat().Ka.getZ()));
+	}
+	else
+		specular = 0;
+	for (LightSource light : scene->getLights())
+	{
+		LightIntensity intense = light.getIntensity() * specular;
+		//cos = Vector.dot
 	}
 
 	return LightIntensity();
+}
+
+/*LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, float width)
+{
+	LightIntensity fin = LightIntensity();
+
+	Vector kd = shape.getMat().Kd;
+	Vector ks = shape.getMat().Ks;
+	Vector ka = shape.getMat().Ka;
+	float ns = shape.getMat().Ns;
+
+	Vector specular;
+	double r, g, b, cos, k = 1;
+	Vector I, N, R;
+	for (LightSource light : scene->getLights())
+	{
+		PointLight *li = (PointLight*)&light;
+		Vector l = ray.getIntersection1() - li->getPosition();
+		N = shape.getNormal(ray.getIntersection1());
+		I = -1.0*(ray.getIntersection1() - ray.getOrigin());
+
+		l.normalize();
+		N.normalize();
+		I.normalize();
+
+		Vector nl = Vector::dotProduct(N, l);
+		R = (2 * nl*N) - l;
+		R.normalize();
+		Vector temp = (kd*nl + ks * std::powf(Vector::dotProduct(I, R), ns));
+		fin += light.getIntensity() * temp;
+	}
+
+	return fin;
+}*/
+
+LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, float width)
+{
+	LightIntensity fin = LightIntensity();
+
+	Vector kd = shape.getMat().Kd;
+	Vector ks = shape.getMat().Ks;
+	Vector ka = shape.getMat().Ka;
+	float ns = shape.getMat().Ns;
+	float d = shape.getMat().d;
+
+	Vector specular;
+	double r, g, b, cos;
+	Vector I, N, R;
+	Vector l;
+
+	I = ray.getDirection().normalizeProduct();
+	N = shape.getNormal();
+	//R = I - ((N * Vector::dotProduct(N, I)) * 2.0f);
+	float ni = Vector::dotProduct(N, I);
+	R = (ni*2.0f*N) - I;
+
+	float ss = Vector::dotProduct(I, R);
+	if (-ss > 0) {
+		specular = std::pow(ss, ns);
+	}
+	else
+		specular = 0;
+
+	specular *= ks;
+	for (LightSource light : scene->getLights())
+	{
+		//PointLight *li = (PointLight*)&light;
+		//l = ray.getIntersection1() - li->getPosition();
+		LightIntensity sIntense = light.getIntensity() * specular;
+		cos = Vector::dotProduct(ray.getDirection().normalizeProduct(), N);
+		r = -light.getIntensity().getR() * d * cos;
+		g = -light.getIntensity().getG() * d * cos;
+		b = -light.getIntensity().getB() * d * cos;
+
+		LightIntensity dIntense = LightIntensity(r, g, b) + ka;
+		fin += sIntense + dIntense;
+		//Vector temp = (kd*ni + ks * std::powf(ss, ns));
+		//fin = light.getIntensity() * temp;
+	}
+
+	return fin;
 }

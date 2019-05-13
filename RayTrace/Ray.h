@@ -19,6 +19,7 @@ public:
 	~Ray();
 
 	float distance;
+	bool intersects = false;
 
 	#pragma region Getter/Setter
 
@@ -60,5 +61,6 @@ public:
 
 	void addRayInersection(Vector v, LightIntensity color);
 	void addRayInersection(float v, LightIntensity color);
+	void addRayInersection(float v, LightIntensity color, Vector point);
 };
 

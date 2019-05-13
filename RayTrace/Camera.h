@@ -8,6 +8,8 @@
 #include "Ray.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "Triangle.h"
+#include "PointLight.h"
 #include "Scene.h"
 
 class Camera
@@ -98,6 +100,10 @@ public:
 	void renderPersp(bitmap_image img, int height, int width);
 	LightIntensity samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
+
 	LightIntensity Phong(Ray& ray, Primitive& shape, float height, float width);
+	LightIntensity PhongSphere(Ray& ray, Sphere& shape, float height, float width);
+	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, float height, float width);
+
 };
 

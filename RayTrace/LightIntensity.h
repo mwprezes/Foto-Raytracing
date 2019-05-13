@@ -1,5 +1,6 @@
 #pragma once
 #include <ostream>
+#include "Vector.h"
 
 class LightIntensity
 {
@@ -150,6 +151,35 @@ public:
 		Clamp();
 		return *this;
 	}
+	
+	LightIntensity& operator+=(Vector& val) {
+		this->r += val.getX();
+		this->g += val.getY();
+		this->b += val.getZ();
+		Clamp();
+		return *this;
+	}
+	LightIntensity& operator-=(Vector& val) {
+		this->r -= val.getX();
+		this->g -= val.getY();
+		this->b -= val.getZ();
+		Clamp();
+		return *this;
+	}
+	LightIntensity& operator*=(Vector& val) {
+		this->r *= val.getX();
+		this->g *= val.getY();
+		this->b *= val.getZ();
+		Clamp();
+		return *this;
+	}
+	LightIntensity& operator/=(Vector& val) {
+		this->r /= val.getX();
+		this->g /= val.getY();
+		this->b /= val.getZ();
+		Clamp();
+		return *this;
+	}
 
 	friend LightIntensity operator+(double val, const LightIntensity& li) {
 		return LightIntensity(val + li.r, val + li.g, val + li.b);
@@ -162,6 +192,19 @@ public:
 	}
 	friend LightIntensity operator/(double val, const LightIntensity& li) {
 		return LightIntensity(val / li.r, val / li.g, val / li.b);
+	}
+
+	LightIntensity operator+(Vector& li) {
+		return LightIntensity(r + li.getX(), g + li.getY(), b + li.getZ());
+	}
+	LightIntensity operator-(Vector& li) {
+		return LightIntensity(r - li.getX(), g - li.getY(), b - li.getZ());
+	}
+	LightIntensity operator*(Vector& li) {
+		return LightIntensity(r * li.getX(), g * li.getY(), b * li.getZ());
+	}
+	LightIntensity operator/(Vector& li) {
+		return LightIntensity(r / li.getX(), g / li.getY(), b / li.getZ());
 	}
 
 #pragma endregion
