@@ -11,7 +11,7 @@ private:
 	int maxIndex;
 	//array<Primitive, maxIndex> 
 
-	std::vector<LightSource> lights;
+	std::vector<LightSource*> lights;
 
 public:
 	Scene();
@@ -29,10 +29,10 @@ public:
 		Primitive p = Primitive();
 		return &p;
 	}
-	LightSource getLight(int at) {
+	LightSource* getLight(int at) {
 		return lights[at];
 	}
-	std::vector<LightSource> getLights() {
+	std::vector<LightSource*> getLights() {
 		return lights;
 	}
 	int getMaxIndex() {
@@ -43,6 +43,6 @@ public:
 	}
 
 	void addPrimitive(Primitive *shape);
-	void addLight(LightSource light);
+	void addLight(LightSource* light);
 };
 

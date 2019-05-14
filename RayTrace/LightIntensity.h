@@ -57,16 +57,17 @@ public:
 		return out;
 	}
 
-	LightIntensity operator+(LightIntensity& li) {
-		return LightIntensity(r + li.r, g + li.g, b + li.b);
+	LightIntensity operator+(const LightIntensity& li) {
+		LightIntensity light = LightIntensity(r + li.r, g + li.g, b + li.b);
+		return light;
 	}
-	LightIntensity operator-(LightIntensity& li) {
+	LightIntensity operator-(const LightIntensity& li) {
 		return LightIntensity(r - li.r, g - li.g, b - li.b);
 	}
-	LightIntensity operator*(LightIntensity& li) {
+	LightIntensity operator*(const LightIntensity& li) {
 		return LightIntensity(r * li.r, g * li.g, b * li.b);
 	}
-	LightIntensity operator/(LightIntensity& li) {
+	LightIntensity operator/(const LightIntensity& li) {
 		return LightIntensity(r / li.r, g / li.g, b / li.b);
 	}
 
@@ -205,6 +206,19 @@ public:
 	}
 	LightIntensity operator/(Vector& li) {
 		return LightIntensity(r / li.getX(), g / li.getY(), b / li.getZ());
+	}
+
+	friend LightIntensity operator+(Vector val, const LightIntensity& li) {
+		return LightIntensity(val.getX() + li.r, val.getY() + li.g, val.getZ() + li.b);
+	}
+	friend LightIntensity operator-(Vector val, const LightIntensity& li) {
+		return LightIntensity(val.getX() - li.r, val.getY() - li.g, val.getZ() - li.b);
+	}
+	friend LightIntensity operator*(Vector val, const LightIntensity& li) {
+		return LightIntensity(val.getX() * li.r, val.getY() * li.g, val.getZ() * li.b);
+	}
+	friend LightIntensity operator/(Vector val, const LightIntensity& li) {
+		return LightIntensity(val.getX() / li.r, val.getY() / li.g, val.getZ() / li.b);
 	}
 
 #pragma endregion

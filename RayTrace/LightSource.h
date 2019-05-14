@@ -20,5 +20,9 @@ public:
 	LightIntensity getIntensity() {
 		return intensity;
 	}
+
+	void illuminate(const Point& hitPoint, Vector& lightDir, LightIntensity& lightIntensity, float& distance) {
+
+	}
 };
 

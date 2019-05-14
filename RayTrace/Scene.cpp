@@ -25,6 +25,11 @@ Scene::~Scene()
 	}
 	delete[] primitives;
 	primitives = NULL;
+
+	for (int i = 0; i < lights.size(); i++) {
+		delete[] lights[i];
+	}
+	lights.clear();
 }
 
 void Scene::addPrimitive(Primitive *shape)
@@ -40,7 +45,7 @@ void Scene::addPrimitive(Primitive *shape)
 	}
 }
 
-void Scene::addLight(LightSource light)
+void Scene::addLight(LightSource* light)
 {
 	lights.push_back(light);
 }
