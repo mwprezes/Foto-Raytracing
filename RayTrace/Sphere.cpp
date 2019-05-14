@@ -51,7 +51,7 @@ int Sphere::intersect(Ray *ray)
 		//ray.addIntersection1(Vector(x, y, z));
 		//ray.addRayInersection(Vector(x, y, z), color);
 		float xyz = (Vector(x, y, z) - ray->getOrigin()).lengthSquered();
-		ray->addRayInersection(xyz, color);
+		ray->addRayInersection(xyz, color, Vector(x, y, z));
 		addIntersection1(Vector(x, y, z));
 		return 0;
 	}
@@ -66,7 +66,7 @@ int Sphere::intersect(Ray *ray)
 		Vector v1(x, y, z);
 		addIntersection1(Vector(x, y, z));
 		float xyz = (Vector(x, y, z) - ray->getOrigin()).lengthSquered();
-		ray->addRayInersection(xyz, color);
+		ray->addRayInersection(xyz, color, Vector(x, y, z));
 
 		x = ray->getOrigin().getX() + ray->getDirection().getX() * d2;
 		y = ray->getOrigin().getY() + ray->getDirection().getY() * d2;
@@ -82,4 +82,10 @@ int Sphere::intersect(Ray *ray)
 
 		return 1;
 	}
+}
+
+Vector Sphere::getNormal(Point at)
+{
+	Vector normal = -Point::makeVector(at, center);
+	return normal.normalizeProduct();
 }

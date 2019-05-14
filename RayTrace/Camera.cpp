@@ -76,9 +76,17 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			Ray ray = Ray(Point(projectionPlane.getBase() + medX * projectionPlane.getV() + medY * projectionPlane.getU()), projectionPlane.getN());
 			/*sphere.intersect(&ray);
 			sphere2.intersect(&ray);*/
+			LightIntensity PhongColor;
 
 			for (int i = 0; i < scene->getAddIndex(); i++) {
 				scene->getPrimitive(i)->intersect(&ray);
+				if (ray.intersects)
+				{
+					if (typeid(*scene->getPrimitive(i)) == typeid(Triangle))
+						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
+					else if (typeid(*scene->getPrimitive(i)) == typeid(Sphere))
+						PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(i), height, width);
+				}
 			}
 
 			LightIntensity pixelColor;
@@ -91,9 +99,13 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			else
 				pixelColor = ray.getColor();
 
-			int R = int(pixelColor.getR() * 255);
+			/*int R = int(pixelColor.getR() * 255);
 			int G = int(pixelColor.getG() * 255);
-			int B = int(pixelColor.getB() * 255);
+			int B = int(pixelColor.getB() * 255);*/
+
+			int R = int(PhongColor.getR() * 255);
+			int G = int(PhongColor.getG() * 255);
+			int B = int(PhongColor.getB() * 255);
 
 			img.set_pixel(i, j, R, G, B);
 		}
@@ -156,8 +168,12 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 					/*std::string testS = typeid(static_cast<Triangle*>(scene->getPrimitive(i))).name();
 					if (testS == "Triangle")
 						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);*/
-					if (typeid(static_cast<Triangle*>(scene->getPrimitive(i))) == typeid(Triangle*))
+					//std::string test = typeid(*scene->getPrimitive(i)).name();
+
+					if (typeid(*scene->getPrimitive(i)) == typeid(Triangle))
 						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
+					else if (typeid(*scene->getPrimitive(i)) == typeid(Sphere))
+						PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(i), height, width);
 				}
 			}
 
@@ -444,7 +460,49 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, float height, float wi
 	return LightIntensity();
 }
 
-/*LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, float width)
+LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, float width)
+{
+	LightIntensity fin = LightIntensity();
+
+	Vector kd = shape.getMat().Kd;
+	Vector ks = shape.getMat().Ks;
+	Vector ka = shape.getMat().Ka;
+	float ns = shape.getMat().Ns;
+	float d = shape.getMat().d;
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	LightIntensity kds = fuckOperators + kd;
+	LightIntensity kss = fuckOperators + ks;
+	LightIntensity kas = fuckOperators + ka;
+
+	Vector lightIntTest;
+	float intensity;
+	LightIntensity intens;
+
+	Vector I, N, R;
+
+	LightIntensity diff = 0, spec = 0;
+
+	for (LightSource* light : scene->getLights())
+	{
+		PointLight *li = static_cast<PointLight*>(light);
+
+		float lightDistance = 0;
+		li->illuminate(ray.getIntersection1(), I, intens, intensity);
+
+		N = shape.getNormal(ray.getIntersection1());
+		R = I - (2.0f*Vector::dotProduct(N, I)*N);
+
+		diff += d * std::max(0.0f, Vector::dotProduct(N, -I)) * intens;
+		spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
+	}
+
+	fin = diff * kds + spec * kss + kas;
+
+	return fin;
+}
+
+/*LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, float width) // http://www.scratchapixel.com/code.php?id=32&origin=/lessons/3d-basic-rendering/phong-shader-BRDF
 {
 	LightIntensity fin = LightIntensity();
 
@@ -550,13 +608,12 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 	LightIntensity kds = fuckOperators + kd;
 	LightIntensity kss = fuckOperators + ks;
 	LightIntensity kas = fuckOperators + ka;
-	Vector lightDir;
+
+	Vector lightIntTest;
+	float intensity;
 	LightIntensity intens;
 
-	Vector specular;
-	double r, g, b, cos;
 	Vector I, N, R;
-	Vector l;
 
 	LightIntensity diff = 0, spec = 0;
 
@@ -565,7 +622,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		PointLight *li = static_cast<PointLight*>(light);
 
 		float lightDistance = 0;
-		li->illuminate(ray.getIntersection1(), I, intens);
+		li->illuminate(ray.getIntersection1(), I, intens, intensity);
 
 		N = shape.getNormal();
 		R = I - (2.0f*Vector::dotProduct(N, I)*N);

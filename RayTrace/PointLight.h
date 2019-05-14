@@ -19,6 +19,6 @@ public:
 		return position;
 	}
 
-	void illuminate(const Point& hitPoint, Vector& lightDir, LightIntensity& lightIntensity);
+	void illuminate(const Point& hitPoint, Vector& lightDir, LightIntensity& lightIntensity, float& intens);
 };
 

@@ -15,5 +15,6 @@ public:
 	~Sphere();
 
 	int intersect(Ray *ray);
+	Vector getNormal(Point at);
 };
 
