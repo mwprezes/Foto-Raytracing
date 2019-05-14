@@ -574,10 +574,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
 	}
 
-	fin = diff * kds + spec * kss;
-	LightIntensity test = LightIntensity(0);
-	if (fin == test)
-		l = 1;
+	fin = diff * kds + spec * kss + kas;
 
 	return fin;
 }
