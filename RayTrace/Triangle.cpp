@@ -66,6 +66,7 @@ Vector Triangle::getNormal()
 Vector Triangle::getNormal(float x, float y)
 {
 	Vector n = (1 - x - y) * vn1 + x * vn2 + y * vn3;
+	n.normalize();
 	return n;
 }
 
@@ -76,5 +77,11 @@ Vector Triangle::getNormal(Vector intersection)
 	float x = Vector::dotProduct(intersection, local_x);
 	float y = Vector::dotProduct(intersection, local_y);
 	Vector n = (1 - x - y) * vn1 + x * vn2 + y * vn3;
-	return Vector();
+	n.normalize();
+	return n;
+}
+
+Vector Triangle::getNormal(Point intersection)
+{
+	return plane.getN();
 }

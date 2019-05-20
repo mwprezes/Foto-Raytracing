@@ -20,5 +20,6 @@ public:
 	Vector getNormal();
 	Vector getNormal(float x, float y);
 	Vector getNormal(Vector intersection);
+	Vector getNormal(Point intersection);
 };
 

@@ -15,7 +15,18 @@ Camera::Camera()
 Camera::Camera(Point Pos, Vector Dir)
 {
 	pos = Pos;
-	dir = Dir;
+	dir = Dir.normalizeProduct();
+	up = Vector(0, 1, 0);
+	nearPlane = 1;
+	farPlane = 1000;
+	fov = 90;
+	planeDistance = 10;
+}
+
+Camera::Camera(Point Pos, Point lookAt)
+{
+	pos = Pos;
+	LookAt(lookAt);
 	up = Vector(0, 1, 0);
 	nearPlane = 1;
 	farPlane = 1000;
@@ -26,7 +37,7 @@ Camera::Camera(Point Pos, Vector Dir)
 Camera::Camera(Point Pos, Vector Dir, Vector Up, float near, float far, float whereveryouare)
 {
 	pos = Pos;
-	dir = Dir;
+	dir = Dir.normalizeProduct();
 	up = Up;
 	nearPlane = near;
 	farPlane = far;
@@ -43,6 +54,12 @@ Camera::Camera(float x, float y, float z, float vx, float vy, float vz, float ux
 Camera::~Camera()
 {
 	delete scene;
+}
+
+Vector Camera::LookAt(Point lookAt)
+{
+	this->dir = Point::makeVector(pos, lookAt).normalizeProduct();
+	return dir;
 }
 
 void Camera::renderOrtho(bitmap_image img, int height, int width)
@@ -174,6 +191,8 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
 					else if (typeid(*scene->getPrimitive(i)) == typeid(Sphere))
 						PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(i), height, width);
+
+					//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
 				}
 			}
 
@@ -433,9 +452,58 @@ LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL,
 	return pixelColor;
 }
 
-LightIntensity Camera::Phong(Ray & ray, Primitive& shape, float height, float width)
+LightIntensity Camera::Phong(Ray & ray, Primitive* shape, float height, float width)
 {
-	Vector specular;
+
+	LightIntensity fin = LightIntensity();
+
+	Vector kd = shape->getMat().Kd;
+	Vector ks = shape->getMat().Ks;
+	Vector ka = shape->getMat().Ka;
+	float ns = shape->getMat().Ns;
+	float d = shape->getMat().d;
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	LightIntensity kds = fuckOperators + kd;
+	LightIntensity kss = fuckOperators + ks;
+	LightIntensity kas = fuckOperators + ka;
+
+	//kss = 0.08;
+	//ns = 10;
+
+	Vector lightIntTest;
+	float intensity;
+	LightIntensity intens;
+
+	Vector I, N, R;
+
+	LightIntensity diff = 0, spec = 0;
+
+	for (LightSource* light : scene->getLights())
+	{
+		PointLight *li = static_cast<PointLight*>(light);
+
+		float lightDistance = 0;
+		li->illuminate(ray.getIntersection1(), I, intens, intensity);
+
+		N = shape->getNormal(ray.getIntersection1());
+		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
+		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
+		/*Ray toLight = Ray(ray.getIntersection1(), I);
+		for (int i = 0; i < scene->getAddIndex(); i++) {
+			scene->getPrimitive(i)->intersect(&toLight);
+			if (toLight.intersects)
+				return kas;
+		}*/
+		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
+	}
+
+	fin = diff * kds + spec * kss;
+
+	return fin;
+
+	/*Vector specular;
 	double r, g, b, cos;
 	Vector I, N, R;
 
@@ -457,7 +525,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, float height, float wi
 		//cos = Vector.dot
 	}
 
-	return LightIntensity();
+	return LightIntensity();*/
 }
 
 LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, float width)
@@ -475,6 +543,9 @@ LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, floa
 	LightIntensity kss = fuckOperators + ks;
 	LightIntensity kas = fuckOperators + ka;
 
+	//kss = 0.08;
+	//ns = 10;
+
 	Vector lightIntTest;
 	float intensity;
 	LightIntensity intens;
@@ -491,13 +562,19 @@ LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, floa
 		li->illuminate(ray.getIntersection1(), I, intens, intensity);
 
 		N = shape.getNormal(ray.getIntersection1());
-		R = I - (2.0f*Vector::dotProduct(N, I)*N);
-
-		diff += d * std::max(0.0f, Vector::dotProduct(N, -I)) * intens;
-		spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
+		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
+		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
+		/*Ray toLight = Ray(ray.getIntersection1(), I);
+		for (int i = 0; i < scene->getAddIndex(); i++) {
+			scene->getPrimitive(i)->intersect(&toLight);
+			if (toLight.intersects)
+				return kas;
+		}*/
+		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
 	}
 
-	fin = diff * kds + spec * kss + kas;
+	fin = diff * kds + spec * kss;
 
 	return fin;
 }
@@ -603,7 +680,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 	Vector ka = shape.getMat().Ka;
 	float ns = shape.getMat().Ns;
 	float d = shape.getMat().d;
-
+	//ns = 128;
 	LightIntensity fuckOperators = LightIntensity(0);
 	LightIntensity kds = fuckOperators + kd;
 	LightIntensity kss = fuckOperators + ks;
@@ -615,7 +692,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 
 	Vector I, N, R;
 
-	LightIntensity diff = 0, spec = 0;
+	LightIntensity diff = 0, spec = 0, ambi = 0;
 
 	for (LightSource* light : scene->getLights())
 	{
@@ -625,10 +702,19 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		li->illuminate(ray.getIntersection1(), I, intens, intensity);
 
 		N = shape.getNormal();
-		R = I - (2.0f*Vector::dotProduct(N, I)*N);
+		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
+		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
 
-		diff += d * std::max(0.0f, Vector::dotProduct(N, -I)) * intens;
-		spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
+		/*Ray toLight = Ray(ray.getIntersection1(), -I);
+		for (int i = 0; i < scene->getAddIndex(); i++) {
+			scene->getPrimitive(i)->intersect(&toLight);
+			if (toLight.intersects)
+				return kas;
+		}*/
+
+		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
+		//spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
 	}
 
 	fin = diff * kds + spec * kss + kas;

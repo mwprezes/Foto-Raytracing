@@ -33,6 +33,7 @@ protected:
 public:
 	Camera();
 	Camera(Point Pos, Vector Dir);
+	Camera(Point Pos, Point lookAt);
 	Camera(Point Pos, Vector Dir, Vector Up, float near, float far, float whereveryouare);
 	Camera(float x, float y, float z, float vx, float vy, float vz, float ux, float uy, float uz, float near, float far, float fov);
 	~Camera();
@@ -96,12 +97,14 @@ public:
 
 #pragma endregion
 
+	Vector LookAt(Point lookAt);
+
 	void renderOrtho(bitmap_image img, int height, int width);
 	void renderPersp(bitmap_image img, int height, int width);
 	LightIntensity samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 
-	LightIntensity Phong(Ray& ray, Primitive& shape, float height, float width);
+	LightIntensity Phong(Ray& ray, Primitive* shape, float height, float width);
 	LightIntensity PhongSphere(Ray& ray, Sphere& shape, float height, float width);
 	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, float height, float width);
 
