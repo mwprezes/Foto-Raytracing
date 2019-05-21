@@ -711,7 +711,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		N = shape.getNormal();
 		I = -I;
 		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
-		//R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
+		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
 
 		/*Ray toLight = Ray(ray.getIntersection1(), I);
 		for (int i = 0; i < scene->getAddIndex(); i++) {
