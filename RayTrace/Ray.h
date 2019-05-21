@@ -20,6 +20,8 @@ public:
 
 	float distance;
 	bool intersects = false;
+	int potentialIndex = -1;
+	int primIndex = -1;
 
 	#pragma region Getter/Setter
 

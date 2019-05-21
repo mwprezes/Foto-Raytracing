@@ -174,28 +174,32 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			sphere2.intersect(&ray);*/
 
 			LightIntensity PhongColor;
+			int intersectsAt = -1;
 
-			for (int i = 0; i < scene->getAddIndex(); i++) {
-				scene->getPrimitive(i)->intersect(&ray);
-				if (ray.intersects) 
-				{
-					/*//Triangle *testT = static_cast<Triangle*>(scene->getPrimitive(i));
-					Triangle testT = *(Triangle*)scene->getPrimitive(i);
-					std::string testS = typeid(testT).name();*/
-					/*std::string testS = typeid(static_cast<Triangle*>(scene->getPrimitive(i))).name();
-					if (testS == "Triangle")
-						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);*/
-					//std::string test = typeid(*scene->getPrimitive(i)).name();
-
-					if (typeid(*scene->getPrimitive(i)) == typeid(Triangle))
-						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
-					else if (typeid(*scene->getPrimitive(i)) == typeid(Sphere))
-						PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(i), height, width);
-
-					//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
-				}
+			for (int k = 0; k < scene->getAddIndex(); k++) {
+				ray.potentialIndex = k;
+				scene->getPrimitive(k)->intersect(&ray);
+				if (ray.intersects)
+					intersectsAt = k;
 			}
+			if (ray.intersects)
+			{
+				/*//Triangle *testT = static_cast<Triangle*>(scene->getPrimitive(i));
+				Triangle testT = *(Triangle*)scene->getPrimitive(i);
+				std::string testS = typeid(testT).name();*/
+				/*std::string testS = typeid(static_cast<Triangle*>(scene->getPrimitive(i))).name();
+				if (testS == "Triangle")
+					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);*/
+					//std::string test = typeid(*scene->getPrimitive(i)).name();
+				ray.potentialIndex = intersectsAt;
 
+				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
+					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), height, width);
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
+					PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(ray.primIndex), height, width);
+
+				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
+			}
 			LightIntensity pixelColor;
 
 			if (antiAliastingOn)
@@ -564,12 +568,15 @@ LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, floa
 		N = shape.getNormal(ray.getIntersection1());
 		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
 		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
-		/*Ray toLight = Ray(ray.getIntersection1(), I);
+
+		Ray toLight(ray.getIntersection1(), -I);
 		for (int i = 0; i < scene->getAddIndex(); i++) {
-			scene->getPrimitive(i)->intersect(&toLight);
-			if (toLight.intersects)
-				return kas;
-		}*/
+			if (i != ray.primIndex)
+				scene->getPrimitive(i)->intersect(&toLight);
+		}
+		if (toLight.intersects)
+			if (Point::makeVector(toLight.getIntersection1(), li->getPosition()).lengthSquered() < Point::makeVector(ray.getIntersection1(), li->getPosition()).lengthSquered())
+				intens = 0;
 		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
 		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
 	}
@@ -702,14 +709,24 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		li->illuminate(ray.getIntersection1(), I, intens, intensity);
 
 		N = shape.getNormal();
+		I = -I;
 		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
-		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
+		//R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
 
-		/*Ray toLight = Ray(ray.getIntersection1(), -I);
+		/*Ray toLight = Ray(ray.getIntersection1(), I);
 		for (int i = 0; i < scene->getAddIndex(); i++) {
-			scene->getPrimitive(i)->intersect(&toLight);
-			if (toLight.intersects)
-				return kas;
+			if (i != ray.primIndex)
+				scene->getPrimitive(i)->intersect(&toLight);
+			else
+				lightIntTest = 0;
+		}
+		if (toLight.intersects)
+		{
+			float dist1 = Point::makeVector(toLight.getIntersection1(), li->getPosition()).length();
+			float dist2 = Point::makeVector(ray.getIntersection1(), li->getPosition()).length();
+			if (dist1 > dist2);
+				return fin;
+			//lightIntTest = 0;
 		}*/
 
 		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;

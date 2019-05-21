@@ -1,5 +1,6 @@
 #include "Plane.h"
-
+#define MINUS_ZERO -0.0001
+#define PLUS_ZERO 0.00001 
 
 
 Plane::Plane()
@@ -55,11 +56,13 @@ int Plane::intersect(Ray & ray)
 {
 	float d = Vector::dotProduct(n, Point::makeVector(base));
 	float nv = (Vector::dotProduct(n, ray.getDirection()));
-	if (nv == 0)
+	/*if (nv == 0)
+		return -1;*/
+	if (nv >= MINUS_ZERO && nv <= PLUS_ZERO)
 		return -1;
 
 	float t = (d - Vector::dotProduct(n, Point::makeVector(ray.getOrigin()))) / nv;
-	if (t < 0)
+	if (t < MINUS_ZERO)
 		return -1;
 
 	float x = ray.getOrigin().getX() + ray.getDirection().getX() * t;

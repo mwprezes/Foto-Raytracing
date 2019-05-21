@@ -1,4 +1,6 @@
 #include "Sphere.h"
+#define MINUS_ZERO -0.0001
+
 
 Sphere::Sphere()
 {
@@ -33,7 +35,7 @@ int Sphere::intersect(Ray *ray)
 
 	float det = loc * loc - Vector::dotProduct(oc, oc) + radious * radious;
 
-	if (det < 0)
+	if (det < MINUS_ZERO)
 		return -1;
 
 	det = sqrt(det);
@@ -43,7 +45,7 @@ int Sphere::intersect(Ray *ray)
 	if (d1 == d2)
 	{
 		//ray.addIntersection(Vector(ray.getDirection() * d1));
-		if (loc < 0)
+		if (loc < MINUS_ZERO)
 			return -1;
 		float x = ray->getOrigin().getX() + ray->getDirection().getX() * d1;
 		float y = ray->getOrigin().getY() + ray->getDirection().getY() * d1;
@@ -57,7 +59,7 @@ int Sphere::intersect(Ray *ray)
 	}
 	else
 	{
-		if (loc <= 0)
+		if (loc <= MINUS_ZERO)
 			return -1;
 		float x = ray->getOrigin().getX() + ray->getDirection().getX() * d1;
 		float y = ray->getOrigin().getY() + ray->getDirection().getY() * d1;

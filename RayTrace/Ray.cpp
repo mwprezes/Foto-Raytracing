@@ -33,18 +33,20 @@ void Ray::addRayInersection(Vector v, LightIntensity color)
 	{
 		intersection1 = v;
 		this->color = color;
+		primIndex = potentialIndex;
+		intersects = true;
 	}
 	else
 	{
 		Vector s1 = v - origin;
 		Vector s2 = intersection1 - origin;
-		if (s1.length() <= s2.length())
+		if (s1.length() < s2.length())
 		{
 			intersection1 = v;
 			this->color = color;
+			primIndex = potentialIndex;
 		}
 	}
-	intersects = true;
 }
 
 void Ray::addRayInersection(float v, LightIntensity color)
@@ -53,16 +55,18 @@ void Ray::addRayInersection(float v, LightIntensity color)
 	{
 		distance = v;
 		this->color = color;
+		primIndex = potentialIndex;
+		intersects = true;
 	}
 	else
 	{
-		if (v <= distance)
+		if (v < distance)
 		{
 			distance = v;
 			this->color = color;
+			primIndex = potentialIndex;
 		}
 	}
-	intersects = true;
 }
 
 void Ray::addRayInersection(float v, LightIntensity color, Vector point)
@@ -72,15 +76,17 @@ void Ray::addRayInersection(float v, LightIntensity color, Vector point)
 		distance = v;
 		intersection1 = point;
 		this->color = color;
+		primIndex = potentialIndex;
+		intersects = true;
 	}
 	else
 	{
-		if (v <= distance)
+		if (v < distance)
 		{
 			distance = v;
 			intersection1 = point;
 			this->color = color;
+			primIndex = potentialIndex;
 		}
 	}
-	intersects = true;
 }

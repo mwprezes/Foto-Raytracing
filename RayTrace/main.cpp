@@ -162,23 +162,23 @@ int main(int argc, char *argv[])
 	cam->setFov(45);
 	img = bitmap_image(1024, 1024);
 
-	cam->setScene(1);
+	/*cam->setScene(1);
 	cam->getScene()->addPrimitive(new Sphere(0, 0, 0, 40));
-	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);*/
 
-	/*cam->setScene(mesh.getTriangles().size());
+	cam->setScene(mesh.getTriangles().size());
 	for (int i = 0; i < mesh.getTriangles().size(); i++)
 	{
 		cam->getScene()->addPrimitive(new Triangle(mesh.getTriangle(i)));
 		cam->getScene()->getPrimitive(i)->setColor(mesh.getMaterial().Kd.getX(), mesh.getMaterial().Kd.getY(), mesh.getMaterial().Kd.getZ());
 		cam->getScene()->getPrimitive(i)->setMat(mesh.getMaterial().name, mesh.getMaterial().Ka, mesh.getMaterial().Kd, mesh.getMaterial().Ks, mesh.getMaterial().Ns, mesh.getMaterial().illum, mesh.getMaterial().Tr, mesh.getMaterial().d);
-	}*/
+	}
 
 	cam->getScene()->addLight(new PointLight(LightIntensity(1,1,1), Point(0, 0, -50), 50000));
 
 	//cam->setFilename("renderMeshPhongO.jpg");
 	//cam->renderOrtho(img, height, width);
-	cam->setFilename("renderMeshPhongS.jpg");
+	cam->setFilename("renderMeshPhong.jpg");
 	cam->renderPersp(img, height, width);
 
 	getchar();
