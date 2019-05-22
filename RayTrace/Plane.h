@@ -7,7 +7,9 @@ private:
 	Point base;
 	Vector u, v;
 	Vector n;
+	Vector *texture;
 
+	int imgWidth;
 public:
 	Plane();
 	Plane(Point p, Vector u, Vector v);
@@ -16,6 +18,8 @@ public:
 	Plane(float x, float y, float z, float xn, float yn, float zn);
 	Plane(Point p1, Point p2, Point p3);
 	~Plane();
+
+	std::string textureName;
 
 	Point getBase() {
 		return base;
@@ -29,8 +33,10 @@ public:
 	Vector getN() {
 		return n;
 	}
+	void setTexture(std::string map);
 
 	int intersect(Ray& ray);
+	void MapTexture(Point intersect);
 	//r(s,t)=p+su+tv
 };
 

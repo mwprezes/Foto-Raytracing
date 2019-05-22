@@ -169,6 +169,7 @@ int main(int argc, char *argv[])
 
 	cam->getScene()->addPrimitive(new Sphere(10, -70, 0, 20));
 	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+	
 	/*cam->setScene(mesh.getTriangles().size());
 	for (int i = 0; i < mesh.getTriangles().size(); i++)
 	{
@@ -182,9 +183,23 @@ int main(int argc, char *argv[])
 	//cam->setFilename("renderMeshPhongO.jpg");
 	//cam->renderOrtho(img, height, width);
 	cam->setFilename("renderMeshPhongS2.jpg");
-	cam->renderPersp(img, height, width);
+	//cam->renderPersp(img, height, width);
 
 	getchar();
+
+	//Zadanie 5\\
+
+	cam = new Camera(Point(50, 50, -50), Vector(0, 0, 1));
+	//cam->LookAt(Point(0, 0, 0));
+	//cam = new Camera(Point(50, 0, -50), Point(0, 0, 0));
+	cam->setAntiAliasingOn(0);
+	cam->setFov(45);
+	img = bitmap_image(1024, 1024);
+
+	cam->setScene(1);
+	cam->getScene()->addPrimitive(new Plane(0, 0, 0, 0, 1, 1));
+	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(0)->setTexture("tex.jpg");
 
 	return 0;
 }

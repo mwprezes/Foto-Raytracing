@@ -1,4 +1,6 @@
 #include "Plane.h"
+#include "bitmap_image.hpp"
+
 #define MINUS_ZERO -0.0001
 #define PLUS_ZERO 0.00001 
 
@@ -52,6 +54,24 @@ Plane::~Plane()
 {
 }
 
+void Plane::setTexture(std::string map)
+{
+	material.map_Kd = map;
+	textureName = map;
+	bitmap_image image(map);
+
+	texture = new Vector[image.width * image.height];
+	imgWidth = image.width;
+
+	for (int i = 0; i < image.width; i++) {
+		for (int j = 0; j < image.height; j++) {
+			texture[j*image.width + i].setX(image.get_pixel(i, j).red) / 255;
+			texture[j*image.width + i].setY(image.get_pixel(i, j).green) / 255;
+			texture[j*image.width + i].setZ(image.get_pixel(i, j).blue) / 255;
+		}
+	}
+}
+
 int Plane::intersect(Ray & ray)
 {
 	float d = Vector::dotProduct(n, Point::makeVector(base));
@@ -75,3 +95,18 @@ int Plane::intersect(Ray & ray)
 
 	return 1;
 }
+
+void Plane::MapTexture(Point intersect)
+{
+	/*float z, x;
+	float ut = (z + 1) / 2;
+	float vv = (x - 1) / 2;*/
+
+	int ut = Vector::dotProduct(u, intersect);
+	int vt = Vector::dotProduct(v, intersect);
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	color = fuckOperators + texture[ut*imgWidth + vt];
+}
+
+

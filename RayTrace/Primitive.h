@@ -83,5 +83,12 @@ public:
 	PrimitiveMaterial getMat() {
 		return material;
 	}
+	void setTexture(std::string map) {
+		material.map_Kd = map;
+	}
+
+	void MapTexture(Point intersect) {
+
+	}
 };
 
