@@ -83,5 +83,6 @@ Vector Triangle::getNormal(Vector intersection)
 
 Vector Triangle::getNormal(Point intersection)
 {
-	return plane.getN();
+	return ((vn1 + vn2 + vn3) / 3).normalizeProduct();
+	//return plane.getN();
 }

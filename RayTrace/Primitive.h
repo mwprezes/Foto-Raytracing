@@ -16,6 +16,8 @@ struct PrimitiveMaterial
 	// Dissolve
 	float d;
 
+	std::string map_Kd;
+
 	PrimitiveMaterial() {
 		name = "Default";
 		Ka = Vector(0.3f);

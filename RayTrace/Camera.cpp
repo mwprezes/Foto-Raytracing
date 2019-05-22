@@ -179,8 +179,8 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			for (int k = 0; k < scene->getAddIndex(); k++) {
 				ray.potentialIndex = k;
 				scene->getPrimitive(k)->intersect(&ray);
-				if (ray.intersects)
-					intersectsAt = k;
+				/*if (ray.intersects)
+					intersectsAt = k;*/
 			}
 			if (ray.intersects)
 			{
@@ -191,7 +191,7 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 				if (testS == "Triangle")
 					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);*/
 					//std::string test = typeid(*scene->getPrimitive(i)).name();
-				ray.potentialIndex = intersectsAt;
+				//ray.potentialIndex = intersectsAt;
 
 				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
 					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), height, width);
@@ -578,10 +578,10 @@ LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, floa
 			if (Point::makeVector(toLight.getIntersection1(), li->getPosition()).lengthSquered() < Point::makeVector(ray.getIntersection1(), li->getPosition()).lengthSquered())
 				intens = 0;
 		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
-		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, dir), 0.0f), ns) * intens;
 	}
 
-	fin = diff * kds + spec * kss;
+	fin = diff * kds + spec * kss + kas;
 
 	return fin;
 }
@@ -731,7 +731,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 
 		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
 		//spec += std::pow(std::max(0.0f, Vector::dotProduct(R, -ray.getDirection().normalizeProduct())), ns) * intens;
-		spec += std::pow(std::max(Vector::dotProduct(R, ray.getDirection().normalizeProduct()), 0.0f), ns) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, -dir), 0.0f), ns) * intens;
 	}
 
 	fin = diff * kds + spec * kss + kas;

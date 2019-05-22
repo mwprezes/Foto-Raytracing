@@ -32,7 +32,8 @@ void PointLight::illuminate(const Point & hitPoint, Vector & lightDir, LightInte
 	//I = lightDir.normalizeProduct();
 	float dist2 = lightDir.lengthSquered();
 	float intensDist = lightDir.length();
-	lightDir /= intensDist;
+	//lightDir /= intensDist;
+	lightDir.normalize();
 	Vector inte = Vector(intensity.getR(), intensity.getG(), intensity.getB());
 	intens = radiousIntesity;
 	//lightIntensity = intensity * radiousIntesity;// / (4.0 * 3.14 * dist2);
