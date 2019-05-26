@@ -95,15 +95,23 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			sphere2.intersect(&ray);*/
 			LightIntensity PhongColor;
 
-			for (int i = 0; i < scene->getAddIndex(); i++) {
-				scene->getPrimitive(i)->intersect(&ray);
-				if (ray.intersects)
-				{
-					if (typeid(*scene->getPrimitive(i)) == typeid(Triangle))
-						PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(i), height, width);
-					else if (typeid(*scene->getPrimitive(i)) == typeid(Sphere))
-						PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(i), height, width);
-				}
+			for (int k = 0; k < scene->getAddIndex(); k++) {
+				ray.potentialIndex = k;
+				scene->getPrimitive(k)->intersect(&ray);
+			}
+			if (ray.intersects)
+			{
+				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
+					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), height, width);
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
+					PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(ray.primIndex), height, width);
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
+					PhongColor = PhongPlane(ray, *(Plane*)scene->getPrimitive(ray.primIndex), height, width);
+				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
+
+
+				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
+					PhongColor *= scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
 			}
 
 			LightIntensity pixelColor;
@@ -197,8 +205,12 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), height, width);
 				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
 					PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(ray.primIndex), height, width);
-
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
+					PhongColor = PhongPlane(ray, *(Plane*)scene->getPrimitive(ray.primIndex), height, width);
 				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
+
+				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere) || typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
+					PhongColor += scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
 			}
 			LightIntensity pixelColor;
 
@@ -530,6 +542,60 @@ LightIntensity Camera::Phong(Ray & ray, Primitive* shape, float height, float wi
 	}
 
 	return LightIntensity();*/
+}
+
+LightIntensity Camera::PhongPlane(Ray & ray, Plane & shape, float height, float width)
+{
+	LightIntensity fin = LightIntensity();
+
+	Vector kd = shape.getMat().Kd;
+	Vector ks = shape.getMat().Ks;
+	Vector ka = shape.getMat().Ka;
+	float ns = shape.getMat().Ns;
+	float d = shape.getMat().d;
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	LightIntensity kds = fuckOperators + kd;
+	LightIntensity kss = fuckOperators + ks;
+	LightIntensity kas = fuckOperators + ka;
+
+	//kss = 0.08;
+	//ns = 10;
+
+	Vector lightIntTest;
+	float intensity;
+	LightIntensity intens;
+
+	Vector I, N, R;
+
+	LightIntensity diff = 0, spec = 0;
+
+	for (LightSource* light : scene->getLights())
+	{
+		PointLight *li = static_cast<PointLight*>(light);
+
+		float lightDistance = 0;
+		li->illuminate(ray.getIntersection1(), I, intens, intensity);
+
+		N = shape.getN();
+		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
+		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
+
+		Ray toLight(ray.getIntersection1(), -I);
+		for (int i = 0; i < scene->getAddIndex(); i++) {
+			if (i != ray.primIndex)
+				scene->getPrimitive(i)->intersect(&toLight);
+		}
+		if (toLight.intersects)
+			if (Point::makeVector(toLight.getIntersection1(), li->getPosition()).lengthSquered() < Point::makeVector(ray.getIntersection1(), li->getPosition()).lengthSquered())
+				intens = 0;
+		diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
+		spec += std::pow(std::max(Vector::dotProduct(R, dir), 0.0f), ns) * intens;
+	}
+
+	fin = diff * kds + spec * kss + kas;
+
+	return fin;
 }
 
 LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, float height, float width)

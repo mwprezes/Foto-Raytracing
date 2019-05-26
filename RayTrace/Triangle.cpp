@@ -25,7 +25,7 @@ Triangle::~Triangle()
 int Triangle::intersect(Ray * ray)
 {
 	Ray tempRay = *ray;
-	if (plane.intersect(tempRay) == -1)
+	if (plane.intersect(&tempRay) == -1)
 		return -1;
 
 	Vector fa, fb, fc;

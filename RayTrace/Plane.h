@@ -7,7 +7,8 @@ private:
 	Point base;
 	Vector u, v;
 	Vector n;
-	Vector *texture;
+	std::vector<Vector> texture;
+	//Vector *texture;
 
 	int imgWidth;
 public:
@@ -35,8 +36,8 @@ public:
 	}
 	void setTexture(std::string map);
 
-	int intersect(Ray& ray);
-	void MapTexture(Point intersect);
+	int intersect(Ray* ray);
+	LightIntensity MapTexture(Point intersect);
 	//r(s,t)=p+su+tv
 };
 

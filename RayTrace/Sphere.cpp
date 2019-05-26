@@ -1,6 +1,6 @@
 #include "Sphere.h"
 #define MINUS_ZERO -0.0001
-
+#define M_PI 3.14159265358979323846
 
 Sphere::Sphere()
 {
@@ -90,4 +90,70 @@ Vector Sphere::getNormal(Point at)
 {
 	Vector normal = Point::makeVector(at, center);
 	return normal.normalizeProduct();
+}
+
+void Sphere::setTexture(std::string map)
+{
+	material.map_Kd = map;
+	textureName = map;
+	bitmap_image image(map);
+
+	int size = image.width() * image.height();
+	//texture.reserve(size);
+	for (int i = 0; i < size; i++)
+		texture.push_back(Vector());
+
+	imgWidth = image.width();
+	imgHeight = image.height();
+
+	for (int i = 0; i < image.width(); i++) {
+		for (int j = 0; j < image.height(); j++) {
+			int ind = j * image.width() + i;
+			texture[ind].setX(image.get_pixel(i, j).red);
+			texture[ind].setY(image.get_pixel(i, j).green);
+			texture[ind].setZ(image.get_pixel(i, j).blue);
+			texture[ind] /= 255;
+		}
+	}
+}
+
+/*LightIntensity Sphere::MapTexture(Point intersect)
+{
+	LightIntensity fin;
+
+	float theta = std::acos(getNormal(intersect).normalizeProduct().getY());
+	float phi = std::atan2(getNormal(intersect).normalizeProduct().getX(), getNormal(intersect).normalizeProduct().getZ());
+	if (phi < MINUS_ZERO)
+		phi += (M_PI * 2.0);
+
+	float u = phi / (2.0 * M_PI);
+	float v = 1.0 - theta / M_PI;
+
+	int col = (int)((imgWidth - 1)*u);
+	int row = (int)((imgHeight - 1)*v);
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	fin = fuckOperators + texture[row*imgWidth + col];
+
+	return fin;
+}*/
+
+LightIntensity Sphere::MapTexture(Point intersect)
+{
+	LightIntensity fin;
+
+	Vector norm = getNormal(intersect).normalizeProduct();
+
+	float u = 0.5 + std::atan2(norm.getX(), norm.getZ()) / (2.0 * M_PI);
+	float v = 0.5 - std::asin(-norm.getY()) / (M_PI);
+
+	int col = u * imgWidth;
+	int row = v * imgHeight;
+
+	int i = row * imgWidth + col;
+
+	LightIntensity fuckOperators = LightIntensity(0);
+	fin = fuckOperators + texture[i];
+
+	return fin;
 }

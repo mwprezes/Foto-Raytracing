@@ -4,7 +4,7 @@
 #include <conio.h>
 #include <string>
 #include "Point.h"
-#include "bitmap_image.hpp"
+//#include "bitmap_image.hpp"
 #include "Ray.h"
 #include "Sphere.h"
 #include "Plane.h"
@@ -105,6 +105,7 @@ public:
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 
 	LightIntensity Phong(Ray& ray, Primitive* shape, float height, float width);
+	LightIntensity PhongPlane(Ray& ray, Plane& shape, float height, float width);
 	LightIntensity PhongSphere(Ray& ray, Sphere& shape, float height, float width);
 	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, float height, float width);
 

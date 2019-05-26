@@ -1,5 +1,6 @@
 #pragma once
 #include "Ray.h"
+#include "bitmap_image.hpp"
 
 struct PrimitiveMaterial
 {
@@ -83,12 +84,15 @@ public:
 	PrimitiveMaterial getMat() {
 		return material;
 	}
-	void setTexture(std::string map) {
+	/*void setTexture(std::string map) {
 		material.map_Kd = map;
 	}
 
-	void MapTexture(Point intersect) {
+	LightIntensity MapTexture(Point intersect) {
+		return LightIntensity();
+	}*/
 
-	}
+	virtual void setTexture(std::string map);
+	virtual LightIntensity MapTexture(Point intersect);
 };
 

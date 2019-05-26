@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	int i = sphere.intersect(&ray);
 	int j = sphere.intersect(&ray2);
 	int k = sphere.intersect(&ray3);
-	int l = plane.intersect(ray2);
+	int l = plane.intersect(&ray2);
 
 	//R1 & Sphere
 	cout << "Sphere & R1: ";
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
 	//Zadanie 5\\
 
-	cam = new Camera(Point(50, 50, -50), Vector(0, 0, 1));
+	cam = new Camera(Point(0, 0, -50), Vector(0, 0, 1));
 	//cam->LookAt(Point(0, 0, 0));
 	//cam = new Camera(Point(50, 0, -50), Point(0, 0, 0));
 	cam->setAntiAliasingOn(0);
@@ -197,9 +197,17 @@ int main(int argc, char *argv[])
 	img = bitmap_image(1024, 1024);
 
 	cam->setScene(1);
-	cam->getScene()->addPrimitive(new Plane(0, 0, 0, 0, 1, 1));
+	cam->getScene()->addPrimitive(new Plane(Point(-10, -10, 0), Point(-10, 10, 0), Point(10, -10, 0)));
+	//cam->getScene()->addPrimitive(new Plane(Point(0, -10, 0), Vector(10, 10, 0).normalizeProduct(), Vector(0, 10, 0).normalizeProduct()));
+	//cam->getScene()->addPrimitive(new Sphere(0, 0, 0, 40));
 	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
-	cam->getScene()->getPrimitive(0)->setTexture("tex.jpg");
+	cam->getScene()->getPrimitive(0)->setTexture("tex.bmp");
+
+	cam->getScene()->addLight(new PointLight(LightIntensity(1, 1, 1), Point(0, 0, -50), 50000));
+
+	cam->setFilename("Textured.jpg");
+	cam->renderPersp(img, height, width);
+	getchar();
 
 	return 0;
 }

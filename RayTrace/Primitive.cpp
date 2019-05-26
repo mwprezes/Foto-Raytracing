@@ -25,3 +25,12 @@ void Primitive::setMat(std::string name, Vector Ka, Vector Kd, Vector Ks, float 
 {
 	material = PrimitiveMaterial(name, Ka, Kd, Ks, Ns, illum, Tr, d);
 }
+
+void Primitive::setTexture(std::string map)
+{
+}
+
+LightIntensity Primitive::MapTexture(Point intersect)
+{
+	return LightIntensity();
+}
