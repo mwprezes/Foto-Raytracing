@@ -45,6 +45,8 @@ Plane::Plane(float x, float y, float z, float xn, float yn, float zn)
 Plane::Plane(Point p1, Point p2, Point p3)
 {
 	base = p1;
+	P2 = p2;
+	P3 = p3;
 	u = Point::makeVector(p2, p1);
 	v = Point::makeVector(p3, p1);
 	n = Vector::crossProduct(u, v);
@@ -95,7 +97,8 @@ int Plane::intersect(Ray * ray)
 	float z = ray->getOrigin().getZ() + ray->getDirection().getZ() * t;
 
 	Point test(x, y, z);
-	float v = Vector::dotProduct(n, test);
+
+	//float v = Vector::dotProduct(n, test);
 	/*
 	if (v > PLUS_ZERO)
 		return -1;*/
@@ -110,14 +113,26 @@ int Plane::intersect(Ray * ray)
 	if (uvl > bl)
 		return -1;*/
 
-	if (v != 0)
-		return -1;
+	/*if (P2 != NULL && P3 != NULL) 
+	{
+		if (Vector::dotProduct(base, u) < Vector::dotProduct(test, u) < Vector::dotProduct(u, u) && Vector::dotProduct(base, v) < Vector::dotProduct(test, v) < Vector::dotProduct(v, v))
+		{
+			addIntersection1(Vector(x, y, z));
+			float xyz = (Vector(x, y, z) - ray->getOrigin()).lengthSquered();
+			ray->addRayInersection(xyz, color, Vector(x, y, z));
 
-	addIntersection1(Vector(x, y, z));
-	float xyz = (Vector(x, y, z) - ray->getOrigin()).lengthSquered();
-	ray->addRayInersection(xyz, color, Vector(x, y, z));
-
-	return 1;
+			return 1;
+		}
+		else
+			return -1;
+	}
+	else*/
+	{
+		addIntersection1(Vector(x, y, z));
+		float xyz = (Vector(x, y, z) - ray->getOrigin()).lengthSquered();
+		ray->addRayInersection(xyz, color, Vector(x, y, z));
+		return 1;
+	}
 }
 
 /*int Plane::intersect(Ray * ray)

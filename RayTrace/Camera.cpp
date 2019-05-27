@@ -110,7 +110,7 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
 
 
-				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
+				//if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
 					PhongColor *= scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
 			}
 
@@ -209,7 +209,9 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 					PhongColor = PhongPlane(ray, *(Plane*)scene->getPrimitive(ray.primIndex), height, width);
 				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
 
-				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere) || typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
+				if (i == 572 && j == 572)
+					float djb = 1;
+				//if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere) || typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
 					PhongColor += scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
 			}
 			LightIntensity pixelColor;
@@ -774,7 +776,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		float lightDistance = 0;
 		li->illuminate(ray.getIntersection1(), I, intens, intensity);
 
-		N = shape.getNormal();
+		N = shape.getNormal(ray.getIntersection1());
 		I = -I;
 		//R = I - (2.0f*Vector::dotProduct(N, I)*N);
 		R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
@@ -800,7 +802,7 @@ LightIntensity Camera::PhongTriangle(Ray & ray, Triangle & shape, float height, 
 		spec += std::pow(std::max(Vector::dotProduct(R, -dir), 0.0f), ns) * intens;
 	}
 
-	fin = diff * kds + spec * kss + kas;
+	fin = diff * kds + spec * kss;
 
 	return fin;
 }

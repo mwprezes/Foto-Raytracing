@@ -44,3 +44,8 @@ Vector Point::makeVector(Point p1)
 {
 	return Vector(p1.x, p1.y, p1.z);
 }
+
+float Point::Distance(Point p1, Point p2)
+{
+	return sqrt(((p2.getX() - p1.getX()) * (p2.getX() - p1.getX())) + ((p2.getY() - p1.getY()) * (p2.getY() - p1.getY())) + ((p2.getZ() - p1.getZ()) * (p2.getZ() - p1.getZ())));
+}

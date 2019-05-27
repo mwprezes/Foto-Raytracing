@@ -6,6 +6,11 @@ class Triangle :
 {
 private:
 	Plane plane;
+
+	std::vector<Vector> texture;
+	int imgWidth;
+	int imgHeight;
+
 public:
 	Point v1, v2, v3;
 	Point vt1, vt2, vt3;
@@ -21,5 +26,8 @@ public:
 	Vector getNormal(float x, float y);
 	Vector getNormal(Vector intersection);
 	Vector getNormal(Point intersection);
+
+	void setTexture(std::string map);
+	LightIntensity MapTexture(Point intersect);
 };
 

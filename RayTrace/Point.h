@@ -12,6 +12,7 @@ public:
 
 	static Vector makeVector(Point p1, Point p2);
 	static Vector makeVector(Point p1);
+	static float Distance(Point p1, Point p2);
 
 	#pragma region Operators
 

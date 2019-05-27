@@ -9,6 +9,7 @@ private:
 	Vector n;
 	std::vector<Vector> texture;
 	//Vector *texture;
+	Point P2, P3;
 
 	int imgWidth;
 public:
