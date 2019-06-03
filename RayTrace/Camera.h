@@ -29,6 +29,7 @@ protected:
 	int stop;
 	bool antiAliastingOn;
 	std::string filename;
+	int maxAllowedRayReflections = 0;
 
 public:
 	Camera();
@@ -94,6 +95,9 @@ public:
 	void setScene(int numberOfPrimitives) {
 		this->scene = new Scene(numberOfPrimitives);
 	}
+	void setMaxReyReflect(int val) {
+		maxAllowedRayReflections = val;
+	}
 
 #pragma endregion
 
@@ -105,9 +109,10 @@ public:
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 
 	LightIntensity Phong(Ray& ray, Primitive* shape, float height, float width);
-	LightIntensity PhongPlane(Ray& ray, Plane& shape, float height, float width);
-	LightIntensity PhongSphere(Ray& ray, Sphere& shape, float height, float width);
+	LightIntensity PhongPlane(Ray& ray, Plane& shape, int reflectionNumber);
+	LightIntensity PhongSphere(Ray& ray, Sphere& shape, int reflectionNumber);
 	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, float height, float width);
 
+	//LightIntensity CalculateReflection(Ray& ray, Sphere& shape);
 };
 

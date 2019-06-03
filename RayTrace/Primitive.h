@@ -59,6 +59,9 @@ public:
 	void setColor(double R, double G, double B);
 	void setMat(std::string name, Vector Ka, Vector Kd, Vector Ks, float Ns, float illum, float Tr, float d);
 
+	bool isMirror = false;
+	bool isRefracting = false;
+
 	Vector getIntersection1() {
 		return intersection1;
 	}
@@ -83,6 +86,9 @@ public:
 	}
 	PrimitiveMaterial getMat() {
 		return material;
+	}
+	void setMatColour(Vector kd, Vector ks, Vector ka) {
+		material = PrimitiveMaterial("Changed", ka, kd, ks, 32, 2, 0, 1);
 	}
 	/*void setTexture(std::string map) {
 		material.map_Kd = map;
