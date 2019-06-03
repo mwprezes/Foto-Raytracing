@@ -108,10 +108,10 @@ public:
 	LightIntensity samplingOrtho(Ray rayMed, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 	LightIntensity samplingPersp(Point center, Point TL, Point TR, Point BL, Point BR, Ray rayTL, Ray rayTR, Ray rayBL, Ray rayBR, float height, float width, int maxStop);
 
-	LightIntensity Phong(Ray& ray, Primitive* shape, float height, float width);
+	LightIntensity Phong(Ray& ray, Primitive& shape, int reflectionNumber);
 	LightIntensity PhongPlane(Ray& ray, Plane& shape, int reflectionNumber);
 	LightIntensity PhongSphere(Ray& ray, Sphere& shape, int reflectionNumber);
-	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, float height, float width);
+	LightIntensity PhongTriangle(Ray& ray, Triangle& shape, int reflectionNumber);
 
 	//LightIntensity CalculateReflection(Ray& ray, Sphere& shape);
 };

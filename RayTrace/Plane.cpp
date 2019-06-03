@@ -58,6 +58,11 @@ Plane::~Plane()
 {
 }
 
+Vector Plane::getNormal(Point intersection)
+{
+	return n;
+}
+
 void Plane::setTexture(std::string map)
 {
 	material.map_Kd = map;

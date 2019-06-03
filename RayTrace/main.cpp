@@ -228,13 +228,14 @@ int main(int argc, char *argv[])
 	cam->setFov(45);
 	img = bitmap_image(1024, 1024);
 
-	cam->setScene(4);
+	cam->setScene(5);
 	cam->getScene()->addPrimitive(new Sphere(42, 0, 0, 40));
 	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
 	cam->getScene()->getPrimitive(0)->isMirror = true;
 
 	cam->getScene()->addPrimitive(new Sphere(-32, 0, 0, 30));
 	cam->getScene()->getPrimitive(1)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(1)->isRefracting = true;
 
 	/*cam->getScene()->addPrimitive(new Sphere(0, 0, 200, 100));
 	cam->getScene()->getPrimitive(2)->setColor(0, 0, 1);
@@ -246,6 +247,9 @@ int main(int argc, char *argv[])
 
 	cam->getScene()->addPrimitive(new Sphere(100, 0, -50, 40));
 	cam->getScene()->getPrimitive(3)->setColor(0, 0, 1);
+
+	cam->getScene()->addPrimitive(new Sphere(-40, 25, 150, 25));
+	cam->getScene()->getPrimitive(4)->setColor(0, 0, 1);
 
 	cam->getScene()->addLight(new PointLight(LightIntensity(1, 1, 1), Point(0, 0, -50), 50000));
 

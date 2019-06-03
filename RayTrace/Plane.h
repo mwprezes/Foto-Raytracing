@@ -35,6 +35,9 @@ public:
 	Vector getN() {
 		return n;
 	}
+
+	Vector getNormal(Point intersection);
+
 	void setTexture(std::string map);
 
 	int intersect(Ray* ray);

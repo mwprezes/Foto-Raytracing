@@ -103,7 +103,24 @@ Vector Triangle::getNormal(Vector intersection)
 
 Vector Triangle::getNormal(Point intersection)
 {
-	return ((vn1 + vn2 + vn3) / 3).normalizeProduct();
+	Vector v00 = v2 - v1, v11 = v3 - v1, v22 = intersection - v1;
+	float d00 = Vector::dotProduct(v00, v00);
+	float d01 = Vector::dotProduct(v00, v11);
+	float d11 = Vector::dotProduct(v11, v11);
+	float d20 = Vector::dotProduct(v22, v00);
+	float d21 = Vector::dotProduct(v22, v11);
+	float invDenom = 1.0 / (d00 * d11 - d01 * d01);
+
+	float v = (d11 * d20 - d01 * d21) * invDenom;
+	float w = (d00 * d21 - d01 * d20) * invDenom;
+	float u = 1.0f - v - w;
+
+	Vector n = u * vn1 + v * vn2 + w * vn3;
+	n.normalize();
+
+	return n;
+
+	//return ((vn1 + vn2 + vn3) / 3).normalizeProduct();
 	//return plane.getN();
 }
 
