@@ -28,7 +28,7 @@ PointLight::~PointLight()
 
 void PointLight::illuminate(const Point & hitPoint, Vector & lightDir, LightIntensity & lightIntensity, float& intens)
 {
-	lightDir = -Point::makeVector(hitPoint, position);
+	lightDir = Point::makeVector(hitPoint, position);
 	//I = lightDir.normalizeProduct();
 	float dist2 = lightDir.lengthSquered();
 	float intensDist = lightDir.length();

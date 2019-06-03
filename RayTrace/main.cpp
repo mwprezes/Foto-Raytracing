@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
 
 	//Zadanie 1\\
 
-	Point p(0, 0, 0);
-	Vector v(0, 1, 1);
+	Point p(0, 0, -50);
+	Vector v(0, 0, 1);
 
 	Ray ray(0, 0, -20, 0, 0, 1);
 	Ray ray2(0, 0, -20, 0, 1, 0);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	int i = sphere.intersect(&ray);
 	int j = sphere.intersect(&ray2);
 	int k = sphere.intersect(&ray3);
-	int l = plane.intersect(&ray2);
+	int l = plane2.intersect(&ray);
 
 	//R1 & Sphere
 	cout << "Sphere & R1: ";
@@ -222,8 +222,6 @@ int main(int argc, char *argv[])
 	//Zadanie 6\\
 
 	cam = new Camera(Point(0, 0, -100), Vector(0, 0, 1));
-	//cam->LookAt(Point(0, 0, 0));
-	//cam = new Camera(Point(50, 0, -50), Point(0, 0, 0));
 	cam->setAntiAliasingOn(0);
 	cam->setFov(45);
 	img = bitmap_image(1024, 1024);
@@ -255,6 +253,53 @@ int main(int argc, char *argv[])
 
 	cam->setMaxReyReflect(2);
 	cam->setFilename("Last.jpg");
+	//cam->renderPersp(img, height, width);
+
+	getchar();
+
+	//Zadanie Fin\\
+
+	cam = new Camera(Point(0, 0, -100), Vector(0, 0, 1));
+	cam->setAntiAliasingOn(0);
+	cam->setFov(45);
+	img = bitmap_image(1024, 1024);
+
+	cam->setScene(7);
+	cam->getScene()->addPrimitive(new Sphere(45, 0, 20, 40));
+	cam->getScene()->getPrimitive(0)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(0)->isMirror = true;
+
+	cam->getScene()->addPrimitive(new Sphere(-45, 0, -20, 40));
+	cam->getScene()->getPrimitive(1)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(1)->isRefracting = true;
+
+	/*cam->getScene()->addPrimitive(new Sphere(0, 0, 200, 100));
+	cam->getScene()->getPrimitive(2)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(2)->setMatColour(Vector(0.6f, 0.0f, 0.1f), Vector(0.9f, 0.0f, 0.2f), Vector(0.4f, 0.0f, 0.0f));*/
+	//cam->getScene()->addPrimitive(new Plane(Point(0, 0, 100), Vector(0, 1, 0), Vector(1, 0, 0)));
+	cam->getScene()->addPrimitive(new Plane(Point(0, 0, 100), Vector(0, 0, -1)));
+	cam->getScene()->getPrimitive(2)->setColor(0, 0, 1);
+
+	cam->getScene()->addPrimitive(new Plane(Point(0, -41, 0), Vector(0, 1, 0)));
+	cam->getScene()->getPrimitive(3)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(3)->setMatColour(Vector(0.0f, 0.6f, 0.1f), Vector(0.0f, 0.9f, 0.1f), Vector(0.0f, 0.4f, 0.0f));
+
+	cam->getScene()->addPrimitive(new Plane(Point(120, 0, 0), Vector(-1, 0, 0)));
+	cam->getScene()->getPrimitive(4)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(4)->setMatColour(Vector(0.6f, 0.0f, 0.1f), Vector(0.9f, 0.0f, 0.2f), Vector(0.4f, 0.0f, 0.0f));
+
+	cam->getScene()->addPrimitive(new Plane(Point(-120, 0, 0), Vector(1, 0, 0)));
+	cam->getScene()->getPrimitive(5)->setColor(0, 0, 1);
+	cam->getScene()->getPrimitive(5)->setMatColour(Vector(0.1f, 0.0f, 0.6f), Vector(0.2f, 0.0f, 0.9f), Vector(0.0f, 0.0f, 0.4f));
+
+	cam->getScene()->addPrimitive(new Plane(Point(0, 100, 0), Vector(0, -1, 0)));
+	cam->getScene()->getPrimitive(6)->setColor(0, -1, 0);
+	cam->getScene()->getPrimitive(6)->setMatColour(Vector(0.3f), Vector(0.4f), Vector(0.1f));
+
+	cam->getScene()->addLight(new PointLight(LightIntensity(1, 1, 1), Point(0, 60, 0), 50000));
+
+	cam->setMaxReyReflect(2);
+	cam->setFilename("Fin.jpg");
 	cam->renderPersp(img, height, width);
 
 	getchar();

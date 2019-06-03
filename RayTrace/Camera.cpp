@@ -160,7 +160,7 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 	v1.normalize();
 
 	planeDistance = (planeWidth / 2.0) / std::tan((fov * 3.14159 / 180) / 2.0);
-
+	//planeDistance = 5000;
 	projectionPlane = Plane(pos, up, v1);
 	pos = pos - (dir * planeDistance);
 
@@ -192,6 +192,13 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 			if (ray.intersects)
 			{
 				PhongColor = Phong(ray, *scene->getPrimitive(ray.primIndex), 0);
+
+				/*if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
+					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), 0);
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
+					PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(ray.primIndex), 0);
+				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
+					PhongColor = PhongPlane(ray, *(Plane*)scene->getPrimitive(ray.primIndex), 0);*/
 
 				if (scene->getPrimitive(ray.primIndex)->getMat().map_Kd != "")
 					PhongColor += scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
@@ -470,6 +477,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 	//kss = 0.08;
 	//ns = 10;
 
+
 	Vector lightIntTest;
 	float intensity;
 	LightIntensity intens;
@@ -478,6 +486,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 
 	LightIntensity diff = 0, spec = 0;
 	int rayRefection = reflectionNumber;
+	bool shadow = false;
 
 	if ((!shape.isMirror && !shape.isRefracting) || rayRefection >= maxAllowedRayReflections)
 	{
@@ -498,12 +507,15 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 				if (i != ray.primIndex)
 					scene->getPrimitive(i)->intersect(&toLight);
 			}
-			if (toLight.intersects)
-				if (Point::makeVector(toLight.getIntersection1(), li->getPosition()).lengthSquered() < Point::makeVector(ray.getIntersection1(), li->getPosition()).lengthSquered())
-					intens = 0;
-
+			if (toLight.intersects) {
+				double rayToIntersection = Point::makeVector(toLight.getIntersection1(), ray.getIntersection1()).lengthSquered(), rayToLight = Point::makeVector(li->getPosition(), ray.getIntersection1()).lengthSquered();
+				if (rayToIntersection < rayToLight) {
+					//intens = 0;
+					//shadow = true;
+				}
+			}
 			diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
-			spec += std::pow(std::max(Vector::dotProduct(R, dir), 0.0f), ns) * intens;
+			spec += std::pow(std::max(Vector::dotProduct(-R, dir), 0.0f), ns) * intens;
 		}
 		fin = diff * kds + spec * kss + kas;
 	}
@@ -534,11 +546,9 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 		float refFactor = 1.52f;
 		I = ray.getDirection();
 		N = shape.getNormal(ray.getIntersection1());
-		//R = (1 * (I - N * Vector::dotProduct(I, N))) / refFactor - N * std::sqrt(1 - ((1 * 1 * (1 - (Vector::dotProduct(I, N) * Vector::dotProduct(I, N)))) / (refFactor * refFactor)));
-		float fi = 1.0f / refFactor;
-		float ni = Vector::dotProduct(I, N);
-		//R = fi * I + N * std::sqrt(1 - fi * fi*(1 - ni * ni)) - fi * N*ni;
-		R = std::sqrt(1 - fi * fi*(1 - ni * ni)) *N + fi * (I - ni * N);
+		double eta = 1.0f / refFactor;
+		double ni = Vector::dotProduct(I, N);
+		R = ((I - N * ni)*eta) - (N * std::sqrt(1 - (eta *eta) *(ni*ni)));
 
 		Ray reflected(ray.getIntersection1(), R);
 
@@ -554,7 +564,8 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 			fin += LightIntensity();
 	}
 
-
+	if (shadow)
+		fin = LightIntensity(0.05f);
 	return fin;
 }
 

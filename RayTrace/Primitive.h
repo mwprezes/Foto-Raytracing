@@ -81,9 +81,7 @@ public:
 	Vector getNormal() {
 		return normal;
 	}
-	virtual Vector getNormal(Point intersection) {
-		return normal;
-	}
+	virtual Vector getNormal(Point intersection);
 	PrimitiveMaterial getMat() {
 		return material;
 	}

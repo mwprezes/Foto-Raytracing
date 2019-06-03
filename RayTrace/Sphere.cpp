@@ -88,7 +88,7 @@ int Sphere::intersect(Ray *ray)
 
 Vector Sphere::getNormal(Point at)
 {
-	Vector normal = Point::makeVector(at, center);
+	Vector normal = -Point::makeVector(at, center);
 	return normal.normalizeProduct();
 }
 

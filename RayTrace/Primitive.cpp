@@ -26,6 +26,11 @@ void Primitive::setMat(std::string name, Vector Ka, Vector Kd, Vector Ks, float 
 	material = PrimitiveMaterial(name, Ka, Kd, Ks, Ns, illum, Tr, d);
 }
 
+Vector Primitive::getNormal(Point intersection)
+{
+	return normal;
+}
+
 void Primitive::setTexture(std::string map)
 {
 }

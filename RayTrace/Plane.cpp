@@ -31,8 +31,7 @@ Plane::Plane(float x, float y, float z, float xu, float yu, float zu, float xv, 
 Plane::Plane(Point p, Vector n)
 {
 	base = p;
-	this->n = n;
-	this->n.normalize();
+	this->n = n.normalizeProduct();
 }
 
 Plane::Plane(float x, float y, float z, float xn, float yn, float zn)

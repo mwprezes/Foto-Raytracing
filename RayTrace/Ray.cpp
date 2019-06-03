@@ -69,8 +69,32 @@ void Ray::addRayInersection(float v, LightIntensity color)
 	}
 }
 
+/*void Ray::addRayInersection(float v, LightIntensity color, Vector point)
+{
+	if (distance == 0 || distance == NULL)
+	{
+		distance = v;
+		intersection1 = point;
+		this->color = color;
+		primIndex = potentialIndex;
+		intersects = true;
+	}
+	else
+	{
+		if (v < distance)
+		{
+			distance = v;
+			intersection1 = point;
+			this->color = color;
+			primIndex = potentialIndex;
+		}
+	}
+}*/
+
 void Ray::addRayInersection(float v, LightIntensity color, Vector point)
 {
+	if (Vector::dotProduct(direction, -Point::makeVector(point, origin)) < 0)
+		return;
 	if (distance == 0 || distance == NULL)
 	{
 		distance = v;
