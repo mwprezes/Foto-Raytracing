@@ -501,7 +501,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 			//R = I - (2.0f*Vector::dotProduct(N, I)*N);
 			R = 2.0f*(Vector::dotProduct(N, I)*N) - I;
 
-			Ray toLight(ray.getIntersection1(), -I);
+			Ray toLight(ray.getIntersection1(), I);
 			for (int i = 0; i < scene->getAddIndex(); i++) {
 				toLight.potentialIndex = i;
 				if (i != ray.primIndex)
@@ -511,7 +511,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 				double rayToIntersection = Point::makeVector(toLight.getIntersection1(), ray.getIntersection1()).lengthSquered(), rayToLight = Point::makeVector(li->getPosition(), ray.getIntersection1()).lengthSquered();
 				if (rayToIntersection < rayToLight) {
 					//intens = 0;
-					//shadow = true;
+					shadow = true;
 				}
 			}
 			diff += d * std::max(0.0f, Vector::dotProduct(N, I)) * intens;
@@ -565,7 +565,7 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 	}
 
 	if (shadow)
-		fin = LightIntensity(0.05f);
+		fin = LightIntensity(0.07f);
 	return fin;
 }
 
