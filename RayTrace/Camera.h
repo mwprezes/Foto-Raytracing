@@ -30,6 +30,7 @@ protected:
 	bool antiAliastingOn;
 	std::string filename;
 	int maxAllowedRayReflections = 0;
+	bool exitSphere = false;
 
 public:
 	Camera();

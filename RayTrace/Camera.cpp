@@ -101,14 +101,15 @@ void Camera::renderOrtho(bitmap_image img, int height, int width)
 			}
 			if (ray.intersects)
 			{
-				if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
+				/*if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Triangle))
 					PhongColor = PhongTriangle(ray, *(Triangle*)scene->getPrimitive(ray.primIndex), 0);
 				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
 					PhongColor = PhongSphere(ray, *(Sphere*)scene->getPrimitive(ray.primIndex), 0);
 				else if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Plane))
 					PhongColor = PhongPlane(ray, *(Plane*)scene->getPrimitive(ray.primIndex), 0);
-				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);
+				//PhongColor = Phong(ray, scene->getPrimitive(i), height, width);*/
 
+				PhongColor = Phong(ray, *scene->getPrimitive(ray.primIndex), 0);
 
 				//if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere))
 				if (scene->getPrimitive(ray.primIndex)->getMat().map_Kd != "")
@@ -202,16 +203,18 @@ void Camera::renderPersp(bitmap_image img, int height, int width)
 
 				if (scene->getPrimitive(ray.primIndex)->getMat().map_Kd != "")
 					PhongColor += scene->getPrimitive(ray.primIndex)->MapTexture(ray.getIntersection1());
+
+				ray.setColour(PhongColor);
 			}
-			LightIntensity pixelColor;
+			//LightIntensity pixelColor;
 
 			if (antiAliastingOn)
 			{
 				stop = 0;				
-				pixelColor = samplingPersp(pixelCenter, NULL, NULL, NULL, NULL, Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), pixelHeight, pixelWidth, 4);
+				PhongColor = samplingPersp(pixelCenter, NULL, NULL, NULL, NULL, Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), Ray(Point(0, 0, 0), -ray.getDirection()), pixelHeight, pixelWidth, 4);
 			}
 			else
-				pixelColor = ray.getColor();
+				PhongColor = ray.getColor();
 
 			/*int R = int(pixelColor.getR() * 255);
 			int G = int(pixelColor.getG() * 255);
@@ -378,37 +381,42 @@ LightIntensity Camera::samplingPersp(Point center, Point TL, Point TR, Point BL,
 	//sphere.intersect(&rayMed);
 	//sphere2.intersect(&rayMed);
 	for (int i = 0; i < scene->getAddIndex(); i++) {
+		rayMed.potentialIndex = i;
 		scene->getPrimitive(i)->intersect(&rayMed);
 	}
-	LightIntensity color0 = rayMed.getColor();
+	LightIntensity color0 = Phong(rayMed, *scene->getPrimitive(rayMed.primIndex), 0);
 
 	//sphere.intersect(&rayTL);
 	//sphere2.intersect(&rayTL);
 	for (int i = 0; i < scene->getAddIndex(); i++) {
+		rayTL.potentialIndex = i;
 		scene->getPrimitive(i)->intersect(&rayTL);
 	}
-	LightIntensity color1 = rayTL.getColor();
+	LightIntensity color1 = Phong(rayTL, *scene->getPrimitive(rayTL.primIndex), 0);
 
 	//sphere.intersect(&rayTR);
 	//sphere2.intersect(&rayTR);
 	for (int i = 0; i < scene->getAddIndex(); i++) {
+		rayTR.potentialIndex = i;
 		scene->getPrimitive(i)->intersect(&rayTR);
 	}
-	LightIntensity color2 = rayTR.getColor();
+	LightIntensity color2 = Phong(rayTR, *scene->getPrimitive(rayTR.primIndex), 0);
 
 	//sphere.intersect(&rayBL);
 	//sphere2.intersect(&rayBL);
 	for (int i = 0; i < scene->getAddIndex(); i++) {
+		rayBL.potentialIndex = i;
 		scene->getPrimitive(i)->intersect(&rayBL);
 	}
-	LightIntensity color3 = rayBL.getColor();
+	LightIntensity color3 = Phong(rayBL, *scene->getPrimitive(rayBL.primIndex), 0);
 
 	//sphere.intersect(&rayBR);
 	//sphere2.intersect(&rayBR);
 	for (int i = 0; i < scene->getAddIndex(); i++) {
-		scene->getPrimitive(i)->intersect(&rayBL);
+		rayBR.potentialIndex = i;
+		scene->getPrimitive(i)->intersect(&rayBR);
 	}
-	LightIntensity color4 = rayBR.getColor();
+	LightIntensity color4 = Phong(rayBR, *scene->getPrimitive(rayBR.primIndex), 0);
 
 	stop += 1;
 
@@ -557,6 +565,9 @@ LightIntensity Camera::Phong(Ray & ray, Primitive& shape, int reflectionNumber)
 			if (i != ray.primIndex)
 				scene->getPrimitive(i)->intersect(&reflected);
 		}
+		if (exitSphere)
+			exitSphere = false;
+
 		if (reflected.intersects) {
 			fin += Phong(reflected, *scene->getPrimitive(reflected.primIndex), ++rayRefection);
 		}
@@ -763,6 +774,14 @@ LightIntensity Camera::PhongSphere(Ray & ray, Sphere & shape, int reflectionNumb
 
 		Ray reflected(ray.getIntersection1(), R);
 
+
+
+		if (typeid(*scene->getPrimitive(ray.primIndex)) == typeid(Sphere) && !exitSphere) {
+			scene->getPrimitive(ray.primIndex)->intersect(&reflected);
+			exitSphere = true;
+			fin += PhongSphere(reflected, *(Sphere*)scene->getPrimitive(reflected.primIndex), rayRefection);
+		}
+		else
 		for (int i = 0; i < scene->getAddIndex(); i++) {
 			reflected.potentialIndex = i;
 			if (i != ray.primIndex)

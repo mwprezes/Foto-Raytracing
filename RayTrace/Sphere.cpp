@@ -142,7 +142,7 @@ LightIntensity Sphere::MapTexture(Point intersect)
 {
 	LightIntensity fin;
 
-	Vector norm = getNormal(intersect).normalizeProduct();
+	Vector norm = -getNormal(intersect).normalizeProduct();
 
 	float u = 0.5 + std::atan2(norm.getX(), norm.getZ()) / (2.0 * M_PI);
 	float v = 0.5 - std::asin(-norm.getY()) / (M_PI);

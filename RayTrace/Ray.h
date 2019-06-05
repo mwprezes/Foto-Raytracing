@@ -58,6 +58,9 @@ public:
 	void addIntersection2(Vector v) {
 		intersection2 = v;
 	}	
+	void setColour(LightIntensity li) {
+		color = li;
+	}
 	
 #pragma endregion
 
